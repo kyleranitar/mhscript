@@ -1,0 +1,4222 @@
+<div>
+<hr>
+	<div id="titleElement">
+		<a href="http://devcnn.wordpress.com" target="_blank"><b>MouseHunt AutoBot (version 1.29.27 Enhanced Edition)</b></a>
+	</div>
+	<div id="nextHornTimeElement">
+		<b>Next Hunter Horn Time:</b>1 min 12 sec  <i>(included extra 13 sec delay &amp; +/- 5 seconds different from MouseHunt timer)</i>
+	</div>
+	<div id="checkTimeElement">
+		<b>Next Trap Check Time:</b> 17 min 27 sec  <i>(included extra 6 sec delay)</i>
+	</div>
+	<div id="kingTimeElement">
+		<b>Last King's Reward:</b> - <font id="lastKingRewardSumTimeElement"></font>
+	</div>
+	<div id="loadTimeElement">
+		<b>Last Page Load: </b>Tue Mar 01 2016 09:15:12
+	</div>
+	<div id="showPreferenceLinkDiv" style="text-align:right">
+		<span>
+			<input type="file" id="inputFiles" name="files" style="display:none;" onchange="handleFiles(this.files)"/>
+			<a id="idRestore" name="Restore" onclick="onIdRestoreClicked();"><b>[Restore]</b></a>&nbsp;&nbsp;&nbsp;
+		</span>
+		<span>
+			<a id="idGetLog" name="GetLog"
+			onclick="onIdGetLogClicked();"><b>[Get Log]</b></a>&nbsp;&nbsp;&nbsp;
+		</span>
+		<span>
+			<a id="idGetPreference" name="GetPreference"
+			onclick="onIdGetPreferenceClicked();"><b>[Get Preference]</b></a>&nbsp;&nbsp;&nbsp;
+		</span>
+		<span>
+			<a id="showPreferenceLink" name="showPreferenceLink" 
+			onclick=
+			"if (document.getElementById('showPreferenceLink').innerHTML == '<b>[Hide Preference]</b>') { 
+				document.getElementById('preferenceDiv').style.display='none';  
+				document.getElementById('showPreferenceLink').innerHTML='<b>[Show Preference]</b>'; 
+			} 
+			else {
+				setLocalToSession();
+				var selectedAlgo = window.sessionStorage.getItem('eventLocation');
+				showOrHideTr(selectedAlgo);
+				document.getElementById('preferenceDiv').style.display='block'; 
+				document.getElementById('showPreferenceLink').innerHTML='<b>[Hide Preference]</b>'; 
+				document.getElementById('eventAlgo').value = selectedAlgo;
+				initControlsBestTrap();
+			}"><b>[Show Preference]</b></a>&nbsp;&nbsp;&nbsp;
+		</span>
+	</div>
+<hr>
+	<div id="preferenceDiv" style="display: none;">
+		<table border="0" width="100%">
+			<tbody>
+				<tr>
+					<td style="height:24px; text-align:right;"><a title="Bot aggressively by ignore all safety measure such as check horn image visible before sounding it"><b>Aggressive Mode</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<select id="AggressiveModeInput" onchange=
+						"var isDisable = (value == 'true') ? 'disabled' : '';
+						document.getElementById('HornTimeDelayMinInput').disabled=isDisable; 
+						document.getElementById('HornTimeDelayMaxInput').disabled=isDisable;
+						">
+							<option value="false">False</option>
+							<option value="true">True</option>
+						</select>&nbsp;&nbsp;<a title="Extra delay time before sounding the horn (in seconds)"><b>Delay:</b></a>&emsp;
+						<input type="number" id="HornTimeDelayMinInput" min="0" max="360" size="5" value="10"> seconds ~ 
+						<input type="number" id="HornTimeDelayMaxInput" min="1" max="361" size="5" value="30"> seconds
+					</td>
+				</tr>
+				<tr>
+					<td style="height:24px; text-align:right;"><a title="Enable trap check once an hour"><b>Trap Check</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<select id="TrapCheckInput" onchange=
+						"var isDisable = (value == 'false') ? 'disabled' : '';
+						document.getElementById('TrapCheckTimeDelayMinInput').disabled=isDisable;
+						document.getElementById('TrapCheckTimeDelayMaxInput').disabled=isDisable;
+						">
+							<option value="false">False</option>
+							<option value="true">True</option>
+						</select>&nbsp;&nbsp;<a title="Extra delay time to trap check (in seconds)"><b>Delay:</b></a>&emsp;
+						<input type="number" id="TrapCheckTimeDelayMinInput" min="0" max="360" size="5" value="10"> seconds ~ 
+						<input type="number" id="TrapCheckTimeDelayMaxInput" min="1" max="361" size="5" value="30"> seconds
+					</td>
+				</tr>
+				<tr>
+					<td style="height:24px; text-align:right;"><a title="Play sound when encounter king's reward"><b>Play King Reward Sound</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<select id="PlayKingRewardSoundInput" >
+							<option value="false">False</option>
+							<option value="true">True</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td style="height:24px; text-align:right;"><a title="Solve King Reward automatically"><b>Auto Solve King Reward</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<select id="AutoSolveKRInput" onchange=
+						"if (value == 'false') { 
+							document.getElementById('AutoSolveKRDelayMinInput').disabled='disabled'; 
+							document.getElementById('AutoSolveKRDelayMaxInput').disabled='disabled';
+						}
+						else {
+							document.getElementById('AutoSolveKRDelayMinInput').disabled=''; 
+							document.getElementById('AutoSolveKRDelayMaxInput').disabled='';
+						}
+						">
+							<option value="false">False</option>
+							<option value="true">True</option>
+						</select>&nbsp;&nbsp;<a title="Extra delay time to solve King Reward (in seconds)"><b>Delay:</b></a>&emsp;
+						<input type="number" id="AutoSolveKRDelayMinInput" min="0" max="360" size="5" value="10"> seconds ~ 
+						<input type="number" id="AutoSolveKRDelayMaxInput" min="1" max="361" size="5" value="30"> seconds
+					</td>
+				</tr>
+				<tr>
+					<td style="height:24px; text-align:right;"><a title="Save King Reward Image into localStorage"><b>Save King Reward Image</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<select id="SaveKRImageInput">
+							<option value="false">False</option>
+							<option value="true">True</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td style="height:24px; text-align:right;"><a title="The script will pause if player at different location that hunt location set before"><b>Remember Location</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<select id="PauseLocationInput">
+							<option value="false">False</option>
+							<option value="true">True</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td style="height:24px; text-align:right;"><b>Best Weapon for </b>
+						<select id="selectBestTrapPowerType" style="width:75px;" onchange="onSelectBestTrapPowerType();">
+							<option value="arcane">Arcane</option>
+							<option value="draconic">Draconic</option>
+							<option value="forgotten">Forgotten</option>
+							<option value="hydro">Hydro</option>
+							<option value="law">Law</option>
+							<option value="physical">Physical</option>
+							<option value="rift">Rift</option>
+							<option value="shadow">Shadow</option>
+							<option value="tactical">Tactical</option>
+						</select>&nbsp;&nbsp;:&nbsp;&nbsp;
+					</td>
+					<td style="height:24px">
+						<select id="selectBestTrapWeapon" onchange="onSelectBestTrapWeapon();">
+							<option value="Pincher">Focused-Side Pawn Pincher</option>
+							<option value="BPT/OAT">Focused-Side Trap BPT/OAT</option>
+							<option value="Arcane 1">Arcane 1</option>
+							<option value="Arcane 2">Arcane 2</option>
+							<option value="Physical 1">Physical 1</option>
+							<option value="Physical 2">Physical 2</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td style="height:24px; text-align:right;"><b>Best Base for </b>
+						<select id="selectBestTrapBaseType" style="width:75px;" onchange="onSelectBestTrapBaseType();">
+							<option value="luck">Luck</option>
+							<option value="power">Power</option>
+						</select>&nbsp;&nbsp;:&nbsp;&nbsp;
+					</td>
+					<td style="height:24px">
+						<select id="selectBestTrapBase" onchange="onSelectBestTrapBase();">
+							<option value="Minotaur Base">Minotaur Base</option>
+							<option value="Rift Base">Rift Base</option>
+							<option value="20 Luck Base">20 Luck Base</option>
+							<option value="20k Power Base">20k Power Base</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td style="height:24px; text-align:right;"><b>Support Me</b>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<input type="button" id="inputShowAds" value="Click to Show Ads" onclick="onIdAdsClicked()">
+					</td>
+				</tr>
+				<tr>
+					<td style="height:24px; text-align:right;" colspan="2">(Changes above this line only take place after user save the preference) <input type="button" id="PreferenceSaveInput" value="Save"
+					onclick=
+					"window.localStorage.setItem('AggressiveMode',document.getElementById('AggressiveModeInput').value);
+					window.localStorage.setItem('HornTimeDelayMin', document.getElementById('HornTimeDelayMinInput').value); 
+					window.localStorage.setItem('HornTimeDelayMax', document.getElementById('HornTimeDelayMaxInput').value);					
+					window.localStorage.setItem('TrapCheck',document.getElementById('TrapCheckInput').value);
+					window.localStorage.setItem('TrapCheckTimeDelayMin', document.getElementById('TrapCheckTimeDelayMinInput').value); 
+					window.localStorage.setItem('TrapCheckTimeDelayMax', document.getElementById('TrapCheckTimeDelayMaxInput').value);					
+					window.localStorage.setItem('PlayKingRewardSound',document.getElementById('PlayKingRewardSoundInput').value);
+					window.localStorage.setItem('AutoSolveKR',document.getElementById('AutoSolveKRInput').value);
+					window.localStorage.setItem('AutoSolveKRDelayMin', document.getElementById('AutoSolveKRDelayMinInput').value); 
+					window.localStorage.setItem('AutoSolveKRDelayMax', document.getElementById('AutoSolveKRDelayMaxInput').value);					
+					window.localStorage.setItem('SaveKRImage',document.getElementById('SaveKRImageInput').value);
+					window.localStorage.setItem('PauseLocation',document.getElementById('PauseLocationInput').value);
+					setSessionToLocal();
+					">&nbsp;&nbsp;&nbsp;</td>
+				</tr>
+				<tr>
+					<td style="height:24px" colspan="2">
+						<div style="width: 100%; height: 1px; background: #000000; overflow: hidden;">
+					</td>
+				</tr>
+				<tr>
+					<td style="height:24px; text-align:right;"><a title="Select special feature"><b>Special Feature</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<select id="selectSpecialFeature" onchange="onSelectSpecialFeature();">
+							<option value="None">None</option>
+							<option value="PILLOWCASE">Open Magical Pillowcase</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td style="height:24px; text-align:right;"><a title="Turn on/off Map Hunting feature"><b>Map Hunting</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<select id="selectMapHunting" onchange="onSelectMapHuntingChanged();">
+							<option value="false">False</option>
+							<option value="true">True</option>
+						</select>
+					</td>
+				</tr>
+				<tr id="trUncaughtMouse" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Click button Get to retrieve all uncaught mouse"><b>Uncaught Mouse</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<select id="selectMouseList">
+							<option value="White Mouse">White Mouse</option>
+							<option value="Brown Mouse">Brown Mouse</option>
+						</select>
+						<input type="button" id="inputSelectMouse" title="Click to select the mouse from the left dropdown list" value="Select This Mouse" onclick="onInputSelectMouse();">&nbsp;&nbsp;
+						<input type="button" id="inputGetMouse" title="Click to Get all uncaught mouse from treasure map" value="Get Uncaught Mouse List" onclick="onInputGetMouse();">
+					</td>
+				</tr>
+				<!-- <tr id="trSelectedUncaughtMouse" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Select desired uncaught mouse"><b>Selected Mouse</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<input type="text" id="inputUncaughtMouse" value="" disabled>&nbsp;&nbsp;
+						<input type="button" id="inputClearUncaughtMouse" title="Click to clear the selected mouse" value="Clear" onclick="onInputClearUncaughtMouse();">
+					</td>
+				</tr> -->
+				<tr id="trSelectedUncaughtMouse" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Select desired uncaught mouse"><b>Selected Mouse</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<div class="chosen-container chosen-container-multi" style="width: 100%;" title="" id="factor_exchanges_chosen">
+							<ul class="chosen-choices">
+								<li class="search-choice">
+									<span>BTC-e</span>
+									<a class="search-choice-close" data-option-array-index="2"></a>
+								</li>
+								<li class="search-choice">
+									<span>Bter</span>
+									<a class="search-choice-close" data-option-array-index="3"></a>
+								</li>
+								<li class="search-choice">
+									<span>C-Cex</span>
+									<a class="search-choice-close" data-option-array-index="4"></a>
+								</li>
+								<li class="search-choice">
+									<span>Cryptopia</span>
+									<a class="search-choice-close" data-option-array-index="5"></a>
+								</li>
+								<li class="search-choice">
+									<span>Poloniex</span>
+									<a class="search-choice-close" data-option-array-index="6"></a>
+								</li>
+								<li class="search-choice">
+									<span>Bittrex</span>
+									<a class="search-choice-close" data-option-array-index="0"></a>
+								</li>
+								<li class="search-field">
+									<input type="text" value="Select Some Options" class="" autocomplete="off" style="width: 25px;">
+								</li>
+							</ul>
+						</div>
+					</td>
+				</tr>
+				<tr id="trCatchLogic" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Select desired catch logic"><b>Catch Logic</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<select id="selectCatchLogic" onchange="onSelectCatchLogicChanged();">
+							<option value="OR">When either one of the Selected Mouse was caught</option>
+							<option value="AND">When all of the Selected Mouse were caught</option>
+						</select>
+					</td>
+				</tr>
+				<tr id="trMapHuntingTrapSetup" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Select trap setup after a mouse was caught"><b>After caught</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<select id="selectWeapon" onchange="onSelectWeaponChanged();">
+							<option value="Remain">Remain</option>
+						</select>
+						<select id="selectBase" onchange="onSelectBaseChanged();">
+							<option value="Remain">Remain</option>
+						</select>
+						<select id="selectTrinket" onchange="onSelectTrinketChanged();">
+							<option value="Remain">Remain</option>
+						</select>
+						<select id="selectBait" onchange="onSelectBaitChanged();">
+							<option value="Remain">Remain</option>
+						</select>
+					</td>
+				</tr>
+				<tr id="trMapHuntingLeave" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Select to leave map after catch logic is fulfilled"><b>Leave Map After Caught</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<select id="selectLeaveMap" onchange="onSelectLeaveMap();">
+							<option value="false">False</option>
+							<option value="true">True</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td style="height:24px" colspan="2">
+						<div style="width: 100%; height: 1px; background: #FFFFFF; overflow: hidden;">
+					</td>
+				</tr>
+				<tr>
+					<td style="height:24px; text-align:right;"><a title="Select the script algorithm based on certain event / location"><b>Event or Location</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<select id="eventAlgo" 
+							onchange=
+							"window.sessionStorage.setItem('eventLocation', value); 
+							showOrHideTr(value);
+							">
+							<option value="None">None</option>
+							<option value="All LG Area">All LG Area</option>
+							<option value="BC/JOD">BC => JOD</option>
+							<option value="Charge Egg 2015">Charge Egg 2015</option>
+							<option value="Charge Egg 2015(17)">Charge Egg 2015(17)</option>
+							<option value="Bristle Woods Rift">Bristle Woods Rift</option>
+							<option value="Burroughs Rift(Red)">Burroughs Rift(Red)</option>
+							<option value="Burroughs Rift(Green)">Burroughs Rift(Green)</option>
+							<option value="Burroughs Rift(Yellow)">Burroughs Rift(Yellow)</option>
+							<option value="Burroughs Rift Custom">Burroughs Rift Custom</option>
+							<option value="FG/AR">FG => AR</option>
+							<option value="Fort Rox">Fort Rox</option>
+							<option value="Fiery Warpath">Fiery Warpath</option>
+							<option value="GES">Gnawnian Express Station</option>
+							<option value="GWH2016">GWH 2016</option>
+							<option value="Halloween 2015">Halloween 2015</option>
+							<option value="Iceberg">Iceberg</option>
+							<option value="Sunken City">Sunken City</option>
+							<option value="Sunken City Aggro">Sunken City Aggro</option>
+							<option value="Sunken City Custom">Sunken City Custom</option>
+							<option value="Labyrinth">Labyrinth</option>
+							<option value="WWRift">WWRift</option>
+							<option value="Zokor">Zokor</option>
+							<option value="SG">Seasonal Garden</option>
+							<option value="ZT">Zugzwang's Tower</option>
+						</select>
+						<input type="button" id="inputResetReload" title="Reset setting of current selected algo" value="Reset & Reload" onclick="onInputResetReload();">
+					</td>
+				</tr>
+				<tr id="trFGARSubLocation" style="display:none;">
+					<td style="height:24px; text-align:right;"><a><b>Sub-Location</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<select id="selectFGARSublocation" onchange="initControlsFGAR();">
+							<option value="FG">Forbidden Grove</option>
+							<option value="AR">Acolyte Realm</option>
+						</select>
+					</td>
+				</tr>
+				<tr id="trFGARTrapSetup" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Select trap setup based on current sub-location"><b>Trap Setup </b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<select id="selectFGARWeapon" style="width: 75px;" onchange="saveFGAR();">
+						</select>
+						<select id="selectFGARBase" style="width: 75px;" onchange="saveFGAR();">
+						</select>
+						<select id="selectFGARTrinket" style="width: 75px;" onchange="saveFGAR();">
+							<option value="None">None</option>
+							<option value="Trinket 1">Trinket 1</option>
+							<option value="Trinket 2">Trinket 2</option>
+						</select>
+						<select id="selectFGARBait" style="width: 75px;" onchange="saveFGAR();">
+							<option value="None">None</option>
+							<option value="Runic Cheese">Runic</option>
+							<option value="Ancient Cheese">Ancient</option>
+							<option value="Brie Cheese">Brie</option>
+							<option value="Toxic Brie">Toxic Brie</option>
+							<option value="Gouda">Gouda</option>
+							<option value="SUPER">SB+</option>
+							<option value="Toxic SUPER">Toxic SB+</option>
+						</select>
+					</td>
+				</tr>
+				<tr id="trBCJODSubLocation" style="display:none;">
+					<td style="height:24px; text-align:right;"><a><b>Sub-Location</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<select id="selectBCJODSublocation" onchange="initControlsBCJOD();">
+							<option value="JOD">Jungle of Dread</option>
+							<option value="LOW">BC Low Tide</option>
+							<option value="MID">BC Mid Tide</option>
+							<option value="HIGH">BC High Tide</option>
+						</select>
+					</td>
+				</tr>
+				<tr id="trBCJODTrapSetup" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Select trap setup based on current sub-location"><b>Trap Setup </b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<select id="selectBCJODWeapon" style="width: 75px;" onchange="saveBCJOD();">
+						</select>
+						<select id="selectBCJODBase" style="width: 75px;" onchange="saveBCJOD();">
+						</select>
+						<select id="selectBCJODTrinket" style="width: 75px;" onchange="saveBCJOD();">
+							<option value="None">None</option>
+							<option value="Trinket 1">Trinket 1</option>
+							<option value="Trinket 2">Trinket 2</option>
+						</select>
+						<select id="selectBCJODBait" style="width: 75px;" onchange="saveBCJOD();">
+							<option value="None">None</option>
+							<option value="Brie Cheese">Brie</option>
+							<option value="Toxic Brie">Toxic Brie</option>
+							<option value="Gouda">Gouda</option>
+							<option value="SUPER">SB+</option>
+							<option value="Toxic SUPER">Toxic SB+</option>
+							<option value="Crescent">Crescent</option>
+							<option value="Moon">Moon</option>
+						</select>
+					</td>
+				</tr>
+				<tr id="trBWRiftAutoChoosePortal" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Choose portal automatically"><b>Auto Choose Portal</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<select id="selectBWRiftChoosePortal" style="width: 75px;" onchange="onSelectBWRiftChoosePortal();">
+							<option value="false">False</option>
+							<option value="true">True</option>
+						</select>
+					</td>
+				</tr>
+				<tr id="trBWRiftChoosePortalAfterCC" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Choose portal after Chamber Cleaver has been caught"><b>Choose Portal</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<select id="selectBWRiftChoosePortalAfterCC" style="width: 75px;" onchange="saveBWRift();">
+							<option value="false">False</option>
+							<option value="true">True</option>
+						</select>&nbsp;&nbsp;After Chamber Cleaver Caught
+					</td>
+				</tr>
+				<tr id="trBWRiftPortalPriority" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Select portal priority"><b>Portal Priority </b></a>
+						<select id="selectBWRiftPriority" style="width: 75px;" onchange="initControlsBWRift();">
+							<option value="1">1 (Highest)</option>
+							<option value="2">2</option>
+							<option value="3">3</option>
+							<option value="4">4</option>
+							<option value="5">5</option>
+							<option value="6">6</option>
+							<option value="7">7</option>
+							<option value="8">8</option>
+							<option value="9">9</option>
+							<option value="10">10</option>
+							<option value="11">11</option>
+							<option value="12">12</option>
+							<option value="13">13 (Lowest)</option>
+						</select>&nbsp;&nbsp;:&nbsp;&nbsp;
+					</td>
+					<td style="height:24px">
+						<select id="selectBWRiftPortal" onchange="saveBWRift();">
+							<option value="GEARWORKS">Gearworks</option>
+							<option value="ANCIENT">Ancient Lab</option>
+							<option value="RUNIC">Runic Laboratory</option>
+							<option value="AL/RL_MSC">AL/RL (MSC)</option>
+							<option value="AL/RL_BSC">AL/RL (BSC)</option>
+							<option value="TIMEWARP">Timewarp Chamber</option>
+							<option value="LUCKY">Lucky Tower</option>
+							<option value="HIDDEN">Hidden Treasury</option>
+							<option value="GUARD">Guard Barracks</option>
+							<option value="SECURITY">Security Chamber</option>
+							<option value="FROZEN">Frozen Alcove</option>
+							<option value="FURNACE">Furnace Room</option>
+							<option value="INGRESS">Ingress Chamber</option>
+							<option value="PURSUER">Pursuer Mousoleum</option>
+							<option value="ACOLYTE">Acolyte Chamber</option>
+						</select>
+					</td>
+				</tr>
+				<tr id="trBWRiftPortalPriorityCursed" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Select portal priority when get cursed"><b>Portal Priority - Cursed </b></a>
+						<select id="selectBWRiftPriorityCursed" style="width: 75px;" onchange="initControlsBWRift();">
+							<option value="1">1 (Highest)</option>
+							<option value="2">2</option>
+							<option value="3">3</option>
+							<option value="4">4</option>
+							<option value="5">5</option>
+							<option value="6">6</option>
+							<option value="7">7</option>
+							<option value="8">8</option>
+							<option value="9">9</option>
+							<option value="10">10</option>
+							<option value="11">11</option>
+							<option value="12">12</option>
+							<option value="13">13 (Lowest)</option>
+						</select>&nbsp;&nbsp;:&nbsp;&nbsp;
+					</td>
+					<td style="height:24px">
+						<select id="selectBWRiftPortalCursed" onchange="saveBWRift();">
+							<option value="GEARWORKS">Gearworks</option>
+							<option value="ANCIENT">Ancient Lab</option>
+							<option value="RUNIC">Runic Laboratory</option>
+							<option value="AL/RL_MSC">AL/RL (MSC)</option>
+							<option value="AL/RL_BSC">AL/RL (BSC)</option>
+							<option value="TIMEWARP">Timewarp Chamber</option>
+							<option value="LUCKY">Lucky Tower</option>
+							<option value="HIDDEN">Hidden Treasury</option>
+							<option value="GUARD">Guard Barracks</option>
+							<option value="SECURITY">Security Chamber</option>
+							<option value="FROZEN">Frozen Alcove</option>
+							<option value="FURNACE">Furnace Room</option>
+							<option value="INGRESS">Ingress Chamber</option>
+							<option value="PURSUER">Pursuer Mousoleum</option>
+							<option value="ACOLYTE">Acolyte Chamber</option>
+						</select>
+					</td>
+				</tr>
+				<tr id="trBWRiftMinTimeSand" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Select minimum time sand before entering Acolyte Chamber (AC)"><b>Min Time Sand When</b></a>
+						<select id="selectBWRiftBuffCurse" style="width: 75px;" onchange="initControlsBWRift();">
+							<option value="0">No Buff & No Curse</option>
+							<option value="1">Fourth Portal & No Curse</option>
+							<option value="2">Acolyte Influence & No Curse</option>
+							<option value="3">Acolyte Influence + Fourth Portal & No Curse</option>
+							<option value="4">Paladin's Bane & No Curse</option>
+							<option value="5">Paladin's Bane + Fourth Portal & No Curse</option>
+							<option value="6">Paladin's Bane + Acolyte Influence & No Curse</option>
+							<option value="7">All Buffs & No Curse</option>
+							<option value="8">Buff(s) & Curse(s)</option>
+						</select>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<input type="number" id="inputMinTimeSand" min="0" max="99999" style="width:75px" value="50" onchange="onInputMinTimeSandChanged(this);">&nbsp;&nbsp;Before Enter AC
+					</td>
+				</tr>
+				<tr id="trBWRiftMinRSC" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Select minimum Runic String Cheese before entering Acolyte Chamber (AC)&#13;Note 1: Total RSC = 2*RSC Pot + RSC"><b>Min Runic String Cheese</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<select id="selectBWRiftMinRSCType" style="width: 75px;" onchange="onSelectBWRiftMinRSCType();">
+							<option value="NUMBER">Number</option>
+							<option value="GEQ">Greater or Equal to Min Time Sand</option>
+						</select>
+						<input type="number" id="inputMinRSC" min="0" max="99999" style="display:none;width:75px" value="50" onchange="onInputMinRSCChanged(this);">&nbsp;&nbsp;Before Enter AC
+					</td>
+				</tr>
+				<tr id="trBWRiftEnterMinigame" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Select to enter minigame with curse(s)"><b>Enter Minigame with Curse(s)</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<select id="selectBWRiftEnterWCurse" style="width: 75px;" onchange="saveBWRift();">
+							<option value="false">False</option>
+							<option value="true">True</option>
+						</select>
+					</td>
+				</tr>
+				<tr id="trBWRiftSubLocation" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Chamber in Bristle Woods Rift"><b>Sub-Location</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<select id="selectBWRiftChamber" onchange="initControlsBWRift();">
+							<option value="NONE">Non-Chamber</option>
+							<option value="GEARWORKS">Gearworks</option>
+							<option value="ANCIENT">Ancient Lab</option>
+							<option value="RUNIC">Runic Laboratory</option>
+							<option value="TIMEWARP">Timewarp Chamber</option>
+							<option value="LUCKY">Lucky Tower</option>
+							<option value="HIDDEN">Hidden Treasury</option>
+							<option value="GUARD">Guard Barracks</option>
+							<option value="SECURITY">Security Chamber</option>
+							<option value="FROZEN">Frozen Alcove</option>
+							<option value="FURNACE">Furnace Room</option>
+							<option value="INGRESS">Ingress Chamber</option>
+							<option value="PURSUER">Pursuer Mousoleum</option>
+							<option value="ACOLYTE_CHARGING">Acolyte Chamber Charging</option>
+							<option value="ACOLYTE_DRAINING">Acolyte Chamber Draining</option>
+							<option value="ACOLYTE_DRAINED">Acolyte Chamber Drained</option>
+							<option value="SEPARATOR" disabled>========= Separator =========</option>
+							<option value="NONE_CURSED">Non-Chamber Cursed</option>
+							<option value="GEARWORKS_CURSED">Gearworks Cursed</option>
+							<option value="ANCIENT_CURSED">Ancient Lab Cursed</option>
+							<option value="RUNIC_CURSED">Runic Laboratory Cursed</option>
+							<option value="TIMEWARP_CURSED">Timewarp Chamber Cursed</option>
+							<option value="LUCKY_CURSED">Lucky Tower Cursed</option>
+							<option value="HIDDEN_CURSED">Hidden Treasury Cursed</option>
+							<option value="GUARD_CURSED">Guard Barracks Cursed</option>
+							<option value="SECURITY_CURSED">Security Chamber Cursed</option>
+							<option value="FROZEN_CURSED">Frozen Alcove Cursed</option>
+							<option value="FURNACE_CURSED">Furnace Room Cursed</option>
+							<option value="INGRESS_CURSED">Ingress Chamber Cursed</option>
+							<option value="PURSUER_CURSED">Pursuer Mousoleum Cursed</option>
+							<option value="ACOLYTE_CHARGING_CURSED">Acolyte Chamber Charging Cursed</option>
+							<option value="ACOLYTE_DRAINING_CURSED">Acolyte Chamber Draining Cursed</option>
+							<option value="ACOLYTE_DRAINED_CURSED">Acolyte Chamber Drained Cursed</option>
+						</select>
+					</td>
+				</tr>
+				<tr id="trBWRiftMasterTrapSetup" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Select trap setup based on current chamber"><b>Master Trap Setup </b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<select id="selectBWRiftWeapon" style="width: 75px;" onchange="saveBWRift();">
+							<option value="Timesplit Dissonance Weapon">TDW</option>
+							<option value="Mysteriously unYielding">MYNORCA</option>
+							<option value="Focused Crystal Laser">FCL</option>
+							<option value="Multi-Crystal Laser">MCL</option>
+							<option value="Biomolecular Re-atomizer Trap">BRT</option>
+							<option value="Crystal Tower">CT</option>
+						</select>
+						<select id="selectBWRiftBase" style="width: 75px;" onchange="saveBWRift();">
+							<option value="Clockwork Base">Clockwork</option>
+							<option value="Fissure Base">Fissure</option>
+							<option value="Rift Base">Rift</option>
+							<option value="Fracture Base">Fracture</option>
+							<option value="Enerchi Induction Base">Enerchi</option>
+							<option value="Attuned Enerchi Induction Base">A. Enerchi</option>
+							<option value="Minotaur Base">Minotaur</option>
+						</select>
+						<select id="selectBWRiftTrinket" style="width: 75px;" onchange="saveBWRift();">
+							<option value="None">None</option>
+							<option value="Trinket 1">Trinket 1</option>
+							<option value="Trinket 2">Trinket 2</option>
+						</select>
+						<select id="selectBWRiftBait" style="width: 75px;" onchange="saveBWRift();">
+							<option value="None">None</option>
+							<option value="Runic String">Runic</option>
+							<option value="Ancient String">Ancient</option>
+							<option value="Magical String">Magical</option>
+							<option value="Brie String">Brie</option>
+							<option value="Swiss String">Swiss</option>
+							<option value="Marble String">Marble</option>
+						</select>
+						<select id="selectBWRiftActivatePocketWatch" style="width: 75px;" onchange="saveBWRift();">
+							<option value="false">Deactivate Quantum Pocketwatch</option>
+							<option value="true">Activate Quantum Pocketwatch</option>
+						</select>
+					</td>
+				</tr>
+				<tr id="trBWRiftTrapSetupSpecial" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Select trap setup based on current chamber"><b>Conditional Trap Setup </b></a>
+						<select id="selectBWRiftCleaverStatus" style="width:75px;display:none" onchange="initControlsBWRift();">
+							<option value="0">Cleaver Not Available</option>
+							<option value="1">Cleaver Available</option>
+						</select>
+						<select id="selectBWRiftAlertLvl" style="width:75px;display:none" onchange="initControlsBWRift();">
+							<option value="0">Alert Lvl 0</option>
+							<option value="1">Alert Lvl 1</option>
+							<option value="2">Alert Lvl 2</option>
+							<option value="3">Alert Lvl 3</option>
+							<option value="4">Alert Lvl 4</option>
+							<option value="5">Alert Lvl 5</option>
+							<option value="6">Alert Lvl 6</option>
+						</select>
+						<select id="selectBWRiftFTC" style="width:75px;display:none" onchange="initControlsBWRift();">
+							<option value="0">FTC 0</option>
+							<option value="1">FTC 1</option>
+							<option value="2">FTC 2</option>
+							<option value="3">FTC 3</option>
+						</select>
+						<select id="selectBWRiftHunt" style="width:75px;display:none" onchange="initControlsBWRift();">
+							<option value="0">Hunt 0</option>
+							<option value="1">Hunt 1</option>
+							<option value="2">Hunt 2</option>
+							<option value="3">Hunt 3</option>
+							<option value="4">Hunt 4</option>
+							<option value="5">Hunt 5</option>
+							<option value="6">Hunt 6</option>
+							<option value="7">Hunt 7</option>
+							<option value="8">Hunt 8</option>
+							<option value="9">Hunt 9</option>
+							<option value="10">Hunt 10</option>
+							<option value="11">Hunt 11</option>
+							<option value="12">Hunt 12</option>
+							<option value="13">Hunt 13</option>
+							<option value="14">Hunt 14</option>
+							<option value="15">Hunt 15</option>
+						</select>
+						&nbsp;&nbsp;:&nbsp;&nbsp;
+					</td>
+					<td style="height:24px">
+						<select id="selectBWRiftWeaponSpecial" style="width: 75px;" onchange="saveBWRift();">
+							<option value="MASTER">Master</option>
+							<option value="Timesplit Dissonance Weapon">TDW</option>
+							<option value="Mysteriously unYielding">MYNORCA</option>
+							<option value="Focused Crystal Laser">FCL</option>
+							<option value="Multi-Crystal Laser">MCL</option>
+							<option value="Biomolecular Re-atomizer Trap">BRT</option>
+							<option value="Crystal Tower">CT</option>
+						</select>
+						<select id="selectBWRiftBaseSpecial" style="width: 75px;" onchange="saveBWRift();">
+							<option value="MASTER">Master</option>
+							<option value="Clockwork Base">Clockwork</option>
+							<option value="Fissure Base">Fissure</option>
+							<option value="Rift Base">Rift</option>
+							<option value="Fracture Base">Fracture</option>
+							<option value="Enerchi Induction Base">Enerchi</option>
+							<option value="Attuned Enerchi Induction Base">A. Enerchi</option>
+							<option value="Minotaur Base">Minotaur</option>
+						</select>
+						<select id="selectBWRiftTrinketSpecial" style="width: 75px;" onchange="saveBWRift();">
+							<option value="MASTER">Master</option>
+							<option value="None">None</option>
+							<option value="Trinket 1">Trinket 1</option>
+							<option value="Trinket 2">Trinket 2</option>
+						</select>
+						<select id="selectBWRiftBaitSpecial" style="width: 75px;" onchange="saveBWRift();">
+							<option value="MASTER">Master</option>
+							<option value="None">None</option>
+							<option value="Runic String">Runic</option>
+							<option value="Ancient String">Ancient</option>
+							<option value="Magical String">Magical</option>
+							<option value="Brie String">Brie</option>
+							<option value="Swiss String">Swiss</option>
+							<option value="Marble String">Marble</option>
+						</select>
+						<select id="selectBWRiftActivatePocketWatchSpecial" style="width: 75px;" onchange="saveBWRift();">
+							<option value="MASTER">Master</option>
+							<option value="false">Deactivate Quantum Pocketwatch</option>
+							<option value="true">Activate Quantum Pocketwatch</option>
+						</select>
+					</td>
+				</tr>
+				<tr id="trBWRiftActivatePocketWatch" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Activate Quantum Pocketwatch forcibly"><b>Force Activate Quantum</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<select id="selectBWRiftForceActiveQuantum" style="width: 75px;" onchange="onSelectBWRiftForceActiveQuantum();">
+							<option value="false">False</option>
+							<option value="true">True</option>
+						</select>&nbsp;&nbsp;If Remaining Loot/Obelisk Charge &le;&nbsp;&nbsp;:&nbsp;&nbsp;
+						<input type="number" id="inputRemainingLootA" min="1" max="100" size="5" value="1" onchange="onInputRemaininigLootAChanged(this);">
+					</td>
+				</tr>
+				<tr id="trBWRiftDeactivatePocketWatch" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Deactivate Quantum Pocketwatch forcibly"><b>Force Deactivate Quantum</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<select id="selectBWRiftForceDeactiveQuantum" style="width: 75px;" onchange="onSelectBWRiftForceDeactiveQuantum();">
+							<option value="false">False</option>
+							<option value="true">True</option>
+						</select>&nbsp;&nbsp;If Remaining Loot/Obelisk Charge &le;&nbsp;&nbsp;:&nbsp;&nbsp;
+						<input type="number" id="inputRemainingLootD" min="1" max="100" size="5" value="1" onchange="onInputRemaininigLootDChanged(this);">
+					</td>
+				</tr>
+				<tr id="trFRoxTrapSetup" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Select trap setup based on current stage"><b>Trap Setup for </b></a>
+						<select id="selectFRoxStage" onchange="initControlsFRox();">
+							<option value="DAY">Day</option>
+							<option value="TWILIGHT">Twilight</option>
+							<option value="MIDNIGHT">Midnight</option>
+							<option value="PITCH">Pitch</option>
+							<option value="UTTER">Utter Darkness</option>
+							<option value="FIRST">First Light</option>
+							<option value="DAWN">Dawn</option>
+						</select>&nbsp;&nbsp;:&nbsp;&nbsp;
+					</td>
+					<td style="height:24px">
+						<select id="selectFRoxWeapon" style="width: 75px;" onchange="saveFRox();">
+							<option value="Weapon 1">Weapon 1</option>
+							<option value="Weapon 2">Weapon 2</option>
+						</select>
+						<select id="selectFRoxBase" style="width: 75px;" onchange="saveFRox();">
+							<option value="Base 1">Base 1</option>
+							<option value="Base 2">Base 2</option>
+						</select>
+						<select id="selectFRoxTrinket" style="width: 75px;" onchange="saveFRox();">
+							<option value="None">None</option>
+							<option value="Trinket 1">Trinket 1</option>
+							<option value="Trinket 2">Trinket 2</option>
+						</select>
+						<select id="selectFRoxBait" style="width: 75px;" onchange="saveFRox();">
+							<option value="None">None</option>
+							<option value="Brie Cheese">Brie</option>
+							<option value="Toxic Brie">Toxic Brie</option>
+							<option value="Gouda">Gouda</option>
+							<option value="SUPER">SB+</option>
+							<option value="Toxic SUPER">Toxic SB+</option>
+							<option value="Crescent">Crescent</option>
+							<option value="Moon">Moon</option>
+						</select>
+						<select id="selectFRoxActivateTower" style="width: 75px;" onchange="saveFRox();">
+							<option value="false">Deactivate Tower</option>
+							<option value="true">Activate Tower</option>
+						</select>
+					</td>
+				</tr>
+				<tr id="trFRoxDeactiveTower" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Select to deactivate tower when full HP"><b>Deactivate Tower When HP Full</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<select id="selectFRoxFullDeactivate" onchange="saveFRox();">
+							<option value="false">False</option>
+							<option value="true">True</option>
+						</select>
+					</td>
+				</tr>
+				<tr id="trGESTrapSetup" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Select"><b>Trap Setup at </b></a>
+						<select id="selectGESStage" style="width: 75px;" onchange="onSelectGESStage();">
+							<option value="SD_BEFORE">Supply Depot (No Supply Rush)</option>
+							<option value="SD_AFTER">Supply Depot (Supply Rush)</option>
+							<option value="RR">Raider River</option>
+							<option value="DC">Daredevil Canyon</option>
+							<option value="WAITING">Waiting</option>
+						</select>&nbsp;&nbsp;:&nbsp;&nbsp;
+					</td>
+					<td style="height:24px">
+						<select id="selectGESTrapWeapon" onchange="onSelectGESTrapWeapon();">
+							<option value="S.L.A.C.">S.L.A.C.</option>
+							<option value="S.L.A.C. II">S.L.A.C. II</option>
+							<option value="Supply Grabber">Supply Grabber</option>
+							<option value="Bandit Deflector">Bandit Deflector</option>
+							<option value="Engine Doubler">Engine Doubler</option>
+							<option value="The Law Draw">The Law Draw</option>
+							<option value="Law Laser Trap">Law Laser Trap</option>
+						</select>
+						<select id="selectGESTrapBase" onchange="onSelectGESTrapBase();">
+							<option value="Clockwork Base">Clockwork</option>
+							<option value="Fissure Base">Fissure</option>
+							<option value="Rift Base">Rift</option>
+							<option value="Fracture Base">Fracture</option>
+							<option value="Enerchi Induction Base">Enerchi</option>
+							<option value="Attuned Enerchi Induction Base">A. Enerchi</option>
+							<option value="Minotaur Base">Minotaur</option>
+						</select>
+						<select id="selectGESTrapTrinket" style="width: 75px;" onchange="onSelectGESTrapTrinket();">
+							<option value="None">None</option>
+						</select>
+						<select id="selectGESRRTrapTrinket" style="width: 75px;display:none" onchange="onSelectGESRRTrapTrinket();">
+							<option value="None">None</option>
+							<option value="AUTO">Roof Rack/Door Guard/Greasy Glob</option>
+						</select>
+						<select id="selectGESDCTrapTrinket" style="width: 75px;display:none" onchange="onSelectGESDCTrapTrinket();">
+							<option value="None">None</option>
+							<option value="AUTO">Black Powder/Dusty Coal</option>
+						</select>
+						<select id="selectGESTrapBait" onchange="onSelectGESTrapBait();">
+							<option value="None">None</option>
+							<option value="SUPER">SB+</option>
+							<option value="Gouda">Gouda</option>
+							<option value="Brie Cheese">Brie</option>
+						</select>
+					</td>
+				</tr>
+				<tr id="trGESSDLoadCrate" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Select"><b>Load Crate</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<select id="selectGESSDLoadCrate" onchange="onSelectGESSDLoadCrate();">
+							<option value="false">False</option>
+							<option value="true">True</option>
+						</select>&nbsp;&nbsp;<a title=""><b>When Crate &ge; :</b></a>&nbsp;
+						<input type="number" id="inputMinCrate" min="1" max="50" size="5" value="11" onchange="onInputMinCrateChanged(this);">
+					</td>
+				</tr>
+				<tr id="trGESRRRepellent" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Select"><b>Use Repellent</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<select id="selectGESRRRepellent" onchange="onSelectGESRRRepellent();">
+							<option value="false">False</option>
+							<option value="true">True</option>
+						</select>&nbsp;&nbsp;<a title=""><b>When Repellent &ge; :</b></a>&nbsp;
+						<input type="number" id="inputMinRepellent" min="1" max="50" size="5" value="11" onchange="onInputMinRepellentChanged(this);">
+					</td>
+				</tr>
+				<tr id="trGESDCStokeEngine" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Select"><b>Stoke Engine</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<select id="selectGESDCStokeEngine" onchange="onSelectGESDCStokeEngine();">
+							<option value="false">False</option>
+							<option value="true">True</option>
+						</select>&nbsp;&nbsp;<a title=""><b>At Fuel Nuggests Batch Size:</b></a>&nbsp;
+						<input type="number" id="inputMinFuelNugget" min="1" max="20" size="5" value="20" onchange="oninputMinFuelNuggetChanged(this);">
+					</td>
+				</tr>
+				<tr id="trWWRiftFactionFocus" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Select a faction to focus on"><b>Faction to Focus</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<select id="selectWWRiftFaction" onchange="onSelectWWRiftFaction();">
+							<option value="CC">Crazed Clearing</option>
+							<option value="GGT">Gigantic Gnarled Tree</option>
+							<option value="DL">Deep Lagoon</option>
+							<option value="MBW_40_44">MBW 40 &le; Rage &le; 44</option>
+							<option value="MBW_45_48">MBW 45 &le; Rage &le; 48</option>
+						</select>
+					</td>
+				</tr>
+				<tr id="trWWRiftFactionFocusNext" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Select next faction to focus on"><b>Next Faction to Focus</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<select id="selectWWRiftFactionNext" onchange="onSelectWWRiftFactionNext();">
+							<option value="Remain">Remain</option>
+							<option value="CC">Crazed Clearing</option>
+							<option value="GGT">Gigantic Gnarled Tree</option>
+							<option value="DL">Deep Lagoon</option>
+						</select>
+					</td>
+				</tr>
+				<tr id="trWWRiftTrapSetup" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Select to trap setup based on certain range of rage"><b>Trap Setup for Rage</b></a>
+						<select id="selectWWRiftRage" onchange="onSelectWWRiftRage();">
+							<option value="0">0-24</option>
+							<option value="25">25-49</option>
+							<option value="50">50</option>
+						</select>&nbsp;&nbsp;:&nbsp;&nbsp;
+					</td>
+					<td style="height:24px">
+						<select id="selectWWRiftTrapWeapon" onchange="onSelectWWRiftTrapWeaponChanged();">
+							<option value="Mysteriously unYielding">MYNORCA</option>
+							<option value="Focused Crystal Laser">FCL</option>
+							<option value="Multi-Crystal Laser">MCL</option>
+							<option value="Biomolecular Re-atomizer Trap">BRT</option>
+							<option value="Crystal Tower">CT</option>
+						</select>
+						<select id="selectWWRiftTrapBase" onchange="onSelectWWRiftTrapBaseChanged();">
+							<option value="Clockwork Base">Clockwork</option>
+							<option value="Fissure Base">Fissure</option>
+							<option value="Rift Base">Rift</option>
+							<option value="Fracture Base">Fracture</option>
+							<option value="Enerchi Induction Base">Enerchi</option>
+							<option value="Attuned Enerchi Induction Base">A. Enerchi</option>
+							<option value="Minotaur Base">Minotaur</option>
+						</select>
+						<select id="selectWWRiftTrapTrinket" style="width: 75px" onchange="onSelectWWRiftTrapTrinketChanged();">
+							<option value="None">None</option>
+							<option value="FSC">Faction Specific Charm</option>
+						</select>
+						<select id="selectWWRiftTrapBait" onchange="onSelectWWRiftTrapBaitChanged();">
+							<option value="None">None</option>
+							<option value="Magical String">Magical</option>
+							<option value="Brie String">Brie</option>
+							<option value="Swiss String">Swiss</option>
+							<option value="Marble String">Marble</option>
+						</select>
+					</td>
+				</tr>
+				<tr id="trWWRiftMBWMinRage" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Select minimum rage to hunt MBW"><b>Min Rage to Hunt MBW</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<input type="number" id="inputMinRage" min="40" max="48" size="5" value="40" onchange="onInputMinRageChanged(this);">
+					</td>
+				</tr>
+				<tr id="trWWRiftMBWTrapSetup" style="display:none;">
+					<td style="height:24px; text-align:right;"><a><b>Trap Setup When </b></a>
+						<select id="selectWWRiftMBWBar4044" style="width: 75px; display:none" onchange="onSelectWWRiftMBWBar4044();">
+							<option value="25_0">0 Bar &ge; 25 Rage</option>
+							<option value="25_1">1 Bar &ge; 25 Rage</option>
+							<option value="25_2">2 Bars &ge; 25 Rage</option>
+							<option value="MIN_RAGE_0">3 Bars &ge; 25 Rage / 0 Bar &ge; Min Rage to Hunt MBW</option>
+							<option value="MIN_RAGE_1">1 Bar &ge; Min Rage to Hunt MBW</option>
+							<option value="MIN_RAGE_2">2 Bars &ge; Min Rage to Hunt MBW</option>
+							<option value="MIN_RAGE_3">3 Bars &ge; Min Rage to Hunt MBW</option>
+						</select>
+						<select id="selectWWRiftMBWBar4548" style="width: 75px; display:none" onchange="onSelectWWRiftMBWBar4548();">
+							<option value="25_0">0 Bar &ge; 25 Rage</option>
+							<option value="25_1">1 Bar &ge; 25 Rage</option>
+							<option value="25_2">2 Bars &ge; 25 Rage</option>
+							<option value="44_0">3 Bars &ge; 25 Rage / 0 Bar &ge; 44 Rage</option>
+							<option value="44_1">1 Bar &ge; 44 Rage</option>
+							<option value="44_2">2 Bars &ge; 44 Rage</option>
+							<option value="44_3">3 Bars &ge; 44 Rage / 0 Bar &ge; Min Rage to Hunt MBW</option>
+							<option value="MIN_RAGE_1">1 Bar &ge; Min Rage to Hunt MBW</option>
+						</select>&nbsp;&nbsp;:&nbsp;&nbsp;
+					</td>
+					<td style="height:24px">
+						<select id="selectWWRiftMBWTrapWeapon" onchange="onSelectWWRiftMBWTrapWeapon();">
+							<option value="Mysteriously unYielding">MYNORCA</option>
+							<option value="Focused Crystal Laser">FCL</option>
+							<option value="Multi-Crystal Laser">MCL</option>
+							<option value="Biomolecular Re-atomizer Trap">BRT</option>
+							<option value="Crystal Tower">CT</option>
+						</select>
+						<select id="selectWWRiftMBWTrapBase" onchange="onSelectWWRiftMBWTrapBase();">
+							<option value="Clockwork Base">Clockwork</option>
+							<option value="Fissure Base">Fissure</option>
+							<option value="Rift Base">Rift</option>
+							<option value="Fracture Base">Fracture</option>
+							<option value="Enerchi Induction Base">Enerchi</option>
+							<option value="Attuned Enerchi Induction Base">A. Enerchi</option>
+							<option value="Minotaur Base">Minotaur</option>
+						</select>
+						<select id="selectWWRiftMBWTrapTrinket" style="width: 75px" onchange="onSelectWWRiftMBWTrapTrinket();">
+							<option value="None">None</option>
+							<option value="FSCLR">Faction Specific Charm (Lowest Rage)</option>
+						</select>
+						<select id="selectWWRiftMBWTrapBait" onchange="onSelectWWRiftMBWTrapBait();">
+							<option value="None">None</option>
+							<option value="Lactrodectus Lancashire">LLC</option>
+							<option value="Magical String">Magical</option>
+							<option value="Brie String">Brie</option>
+							<option value="Swiss String">Swiss</option>
+							<option value="Marble String">Marble</option>
+						</select>
+					</td>
+				</tr>
+				<tr id="trIceberg" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Select to trap setup based on current phase"><b>Trap Setup for</b></a>
+						<select id="selectIcebergPhase" onchange="onSelectIcebergPhase();">
+							<option value="GENERAL">Iceberg General</option>
+							<option value="TREACHEROUS">Treacherous Tunnels</option>
+							<option value="BRUTAL">Brutal Bulwark</option>
+							<option value="BOMBING">Bombing Run</option>
+							<option value="MAD">Mad Depths</option>
+							<option value="ICEWING">Icewing's Lair</option>
+							<option value="HIDDEN">Hidden Depths</option>
+							<option value="DEEP">The Deep Lair</option>
+							<option value="SLUSHY">Slushy Shoreline</option>
+						</select>&nbsp;&nbsp;:&nbsp;&nbsp;
+					</td>
+					<td style="height:24px">
+						<select id="selectIcebergBase" onchange="onSelectIcebergBase();">
+							<option value="Base 1">Base 1</option>
+							<option value="Base 2">Base 2</option>
+						</select>
+						<select id="selectIcebergTrinket" onchange="onSelectIcebergTrinket();">
+							<option value="None">None</option>
+							<option value="Trinket 1">Trinket 1</option>
+							<option value="Trinket 2">Trinket 2</option>
+						</select>
+						<select id="selectIcebergBait" onchange="onSelectIcebergBait();">
+							<option value="None">None</option>
+							<option value="Brie Cheese">Brie</option>
+							<option value="Toxic Brie">Toxic Brie</option>
+							<option value="Gouda">Gouda</option>
+							<option value="SUPER">SB+</option>
+							<option value="Toxic SUPER">Toxic SB+</option>
+						</select>
+					</td>
+				</tr>
+				<tr id="trZTFocus" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Select to chesspiece side to focus"><b>Side to Focus</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<select id="selectZTFocus" onchange="onSelectZTFocus();">
+							<option value="MYSTIC">Mystic Only</option>
+							<option value="TECHNIC">Technic Only</option>
+							<option value="MYSTIC=>TECHNIC">Mystic First Technic Second</option>
+							<option value="TECHNIC=>MYSTIC">Technic First Mystic Second</option>
+						</select>
+					</td>
+				</tr>
+				<tr id="trZTTrapSetup1st" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Select trap setup based certain chesspiece order"><b>First Side Trap Setup for </b></a>
+						<select id="selectZTMouseOrder1st" onchange="onSelectZTMouseOrder();">
+							<option value="PAWN">Pawn</option>
+							<option value="KNIGHT">Knight</option>
+							<option value="BISHOP">Bishop</option>
+							<option value="ROOK">Rook</option>
+							<option value="QUEEN">Queen</option>
+							<option value="KING">King</option>
+							<option value="CHESSMASTER">Chessmaster</option>
+						</select>&nbsp;&nbsp;:&nbsp;&nbsp;
+					</td>
+					<td style="height:24px">
+						<select id="selectZTWeapon1st" onchange="onSelectZTWeapon();">
+							<option value="Pincher">Focused-Side Pawn Pincher</option>
+							<option value="BPT/OAT">Focused-Side Trap BPT/OAT</option>
+						</select>
+						<select id="selectZTBase1st" onchange="onSelectZTBase();">
+						</select>
+						<select id="selectZTTrinket1st" onchange="onSelectZTTrinket();">
+							<option value="None">None</option>
+						</select>
+						<select id="selectZTBait1st" onchange="onSelectZTBait();">
+							<option value="None">None</option>
+							<option value="Brie Cheese">Brie</option>
+							<option value="Gouda">Gouda</option>
+							<option value="SUPER">SB+</option>
+							<option value="Checkmate">Checkmate</option>
+						</select>
+					</td>
+				</tr>
+				<tr id="trZTTrapSetup2nd" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Select trap setup based certain chesspiece order"><b>Second Side Trap Setup for </b></a>
+						<select id="selectZTMouseOrder2nd" onchange="onSelectZTMouseOrder();">
+							<option value="PAWN">Pawn</option>
+							<option value="KNIGHT">Knight</option>
+							<option value="BISHOP">Bishop</option>
+							<option value="ROOK">Rook</option>
+							<option value="QUEEN">Queen</option>
+							<option value="KING">King</option>
+							<option value="CHESSMASTER">Chessmaster</option>
+						</select>&nbsp;&nbsp;:&nbsp;&nbsp;
+					</td>
+					<td style="height:24px">
+						<select id="selectZTWeapon2nd" onchange="onSelectZTWeapon();">
+							<option value="Pincher">Focused-Side Pawn Pincher</option>
+							<option value="BPT/OAT">Focused-Side Trap BPT/OAT</option>
+						</select>
+						<select id="selectZTBase2nd" onchange="onSelectZTBase();">
+						</select>
+						<select id="selectZTTrinket2nd" onchange="onSelectZTTrinket();">
+							<option value="None">None</option>
+						</select>
+						<select id="selectZTBait2nd" onchange="onSelectZTBait();">
+							<option value="None">None</option>
+							<option value="Brie Cheese">Brie</option>
+							<option value="Gouda">Gouda</option>
+							<option value="SUPER">SB+</option>
+							<option value="Checkmate">Checkmate</option>
+						</select>
+					</td>
+				</tr>
+				<tr id="trSGTrapSetup" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Select to trap setup based on certain season"><b>Trap Setup For</b></a>
+						<select id="selectSGSeason" onchange="onSelectSGSeason();">
+							<option value="SPRING">Spring</option>
+							<option value="SUMMER">Summer</option>
+							<option value="FALL">Fall</option>
+							<option value="WINTER">Winter</option>
+						</select>&nbsp;&nbsp;:&nbsp;&nbsp;
+					</td>
+					<td style="height:24px">
+						<select id="selectSGTrapWeapon" style="width: 75px" onchange="onSelectSGTrapWeapon();">
+							<option value="Weapon A">Weapon A</option>
+							<option value="Weapon B">Weapon B</option>
+						</select>
+						<select id="selectSGTrapBase" style="width: 75px" onchange="onSelectSGTrapBase();">
+							<option value="Base A">Base A</option>
+							<option value="Base B">Base B</option>
+						</select>
+						<select id="selectSGTrapTrinket" style="width: 75px" onchange="onSelectSGTrapTrinket();">
+							<option value="None">None</option>
+							<option value="Trinket A">Trinket A</option>
+							<option value="Trinket B">Trinket B</option>
+						</select>
+						<select id="selectSGTrapBait" style="width: 75px" onchange="onSelectSGTrapBait();">
+							<option value="None">None</option>
+							<option value="Brie Cheese">Brie</option>
+							<option value="Toxic Brie">Toxic Brie</option>
+							<option value="Gouda">Gouda</option>
+							<option value="SUPER">SB+</option>
+							<option value="Toxic SUPER">Toxic SB+</option>
+						</select>
+					</td>
+				</tr>
+				<tr id="trSGDisarmBait" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Select to disarm bait when amplifier is fully charged"><b>Disarm Bait</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<select id="selectSGDisarmBait" onchange="onSelectSGDisarmBait();">
+							<option value="false">False</option>
+							<option value="true">True</option>
+						</select>&nbsp;&nbsp;After Amplifier Fully Charged
+					</td>
+				</tr>
+				<tr id="trLGTGAutoFill" style="display:none;">
+					<td style="height:24px; text-align:right;"><b>Auto Fill in </b>
+						<select id="selectLGTGAutoFillSide" onchange="onSelectLGTGAutoFillSide();">
+							<option value="LG">Living Garden</option>
+							<option value="TG">Twisted Garden</option>
+						</select>&nbsp;&nbsp;:&nbsp;&nbsp;
+					</td>
+					<td style="height:24px">
+						<select id="selectLGTGAutoFillState" onchange="onSelectLGTGAutoFillState();">
+							<option value="false">False</option>
+							<option value="true">True</option>
+						</select>
+					</td>
+				</tr>
+				<tr id="trLGTGAutoPour" style="display:none;">
+					<td style="height:24px; text-align:right;"><b>Auto Pour in </b>
+						<select id="selectLGTGAutoPourSide" onchange="onSelectLGTGAutoPourSide();">
+							<option value="LG">Living Garden</option>
+							<option value="TG">Twisted Garden</option>
+						</select>&nbsp;&nbsp;:&nbsp;&nbsp;
+					</td>
+					<td style="height:24px">
+						<select id="selectLGTGAutoPourState" onchange="onSelectLGTGAutoPourState();">
+							<option value="false">False</option>
+							<option value="true">True</option>
+						</select>
+					</td>
+				</tr>
+				<tr id="trPourTrapSetup" style="display:none;">
+					<td style="height:24px; text-align:right;"><b>After Poured in </b>
+						<select id="selectLGTGSide" onchange="onSelectLGTGSide();">
+							<option value="LG">Living Garden</option>
+							<option value="TG">Twisted Garden</option>
+						</select>&nbsp;&nbsp;:&nbsp;&nbsp;
+					</td>
+					<td style="height:24px">
+						<select id="selectLGTGBase" onchange="onSelectLGTGBase();">
+							<option value="Living Base">Living Base</option>
+							<option value="Luck Base">Luck Base</option>
+						</select>
+						<select id="selectLGTGTrinket" onchange="onSelectLGTGTrinket();">
+							<option value="None">None</option>
+							<option value="Ancient Charm">Ancient Charm</option>
+							<option value="Super Cactus Charm">Super Cactus Charm</option>
+						</select>
+						<select id="selectLGTGBait" onchange="onSelectLGTGBait();">
+							<option value="None">None</option>
+							<option value="Gouda">Gouda</option>
+							<option value="Duskshade Camembert">Duskshade Camembert</option>
+							<option value="Lunaria Camembert">Lunaria Camembert</option>
+						</select>
+					</td>
+				</tr>
+				<tr id="trCurseLiftedTrapSetup" style="display:none;">
+					<td style="height:24px; text-align:right;"><b>After Curse Lifted in </b>
+						<select id="selectLCCCSide" onchange="onSelectLCCCSide();">
+							<option value="LC">Lost City</option>
+							<option value="CC">Cursed City</option>
+						</select>&nbsp;&nbsp;:&nbsp;&nbsp;
+					</td>
+					<td style="height:24px">
+						<select id="selectLCCCBase" onchange="onSelectLCCCBase();">
+							<option value="Living Base">Living Base</option>
+							<option value="Luck Base">Luck Base</option>
+						</select>
+						<select id="selectLCCCTrinket" onchange="onSelectLCCCTrinket();">
+							<option value="None">None</option>
+							<option value="Ancient Charm">Ancient Charm</option>
+							<option value="Super Cactus Charm">Super Cactus Charm</option>
+							<option value="Safeguard Charm">Safeguard Charm</option>
+						</select>
+					</td>
+				</tr>
+				<tr id="trSaltedTrapSetup" style="display:none;">
+					<td style="height:24px; text-align:right;"><b>Trap Setup </b>
+						<select id="selectSaltedStatus" onchange="onSelectSaltedStatus();">
+							<option value="before">During</option>
+							<option value="after">After</option>
+						</select><b> Salt Charging</b>&nbsp;&nbsp;:&nbsp;&nbsp;
+					</td>
+					<td style="height:24px">
+						<select id="selectSCBase" onchange="onSelectSCBase();">
+							<option value="Living Base">Living Base</option>
+							<option value="Luck Base">Luck Base</option>
+						</select>&nbsp;&nbsp;<a title="Max number of salt before hunting King Grub"><b>Salt Charge : </b></a>
+						<input type="number" id="inputKGSalt" min="1" max="50" size="5" value="25" onchange="onInputKGSaltChanged();">
+					</td>
+				</tr>
+				<tr id="trGWHTrapSetup" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Select trap setup based on anchor/boost status"><b>Trap Setup When </b></a>
+						<select id="selectGWHZone" style="width: 75px" onchange="initControlsGWH2016();">
+							<option value="ORDER1">Simple Zone With Order</option>
+							<option value="ORDER2">Deluxe Zone With Order</option>
+							<option value="NONORDER1">Simple Zone W/O Order</option>
+							<option value="NONORDER2">Deluxe Zone W/O Order</option>
+							<option value="WINTER_WASTELAND">Winter Wasteland</option>
+							<option value="SNOWBALL_STORM">Snowball Storm</option>
+							<option value="FLYING">Flying</option>
+						</select>&nbsp;&nbsp;:&nbsp;&nbsp;
+					</td>
+					<td style="height:24px">
+						<select id="selectGWHWeapon" style="width: 75px" onchange="saveGWH2016();">
+							<option value="Weapon 1">Weapon 1</option>
+							<option value="Weapon 2">Weapon 2</option>
+						</select>
+						<select id="selectGWHBase" style="width: 75px" onchange="saveGWH2016();">
+							<option value="Base 1">Base 1</option>
+							<option value="Base 2">Base 2</option>
+						</select>
+						<select id="selectGWHTrinket" style="width: 75px;" onchange="onSelectGWHTrinketChanged();">
+							<option value="None">None</option>
+							<option value="ANCHOR_FAC/EAC">FAC/EAC</option>
+						</select>
+						<select id="selectGWHBait" style="width: 75px" onchange="saveGWH2016();">
+							<option value="None">None</option>
+							<option value="ANY_FESTIVE_BRIE">AA/Festive Cheese/Brie</option>
+							<option value="ANY_FESTIVE_GOUDA">AA/Festive Cheese/Gouda</option>
+							<option value="ANY_FESTIVE_SB">AA/Festive Cheese/SUPER|brie+</option>
+						</select>
+						<select id="selectGWHBoost" style="width: 75px" onchange="saveGWH2016();">
+							<option value="false">Not Boost</option>
+							<option value="true">Boost</option>
+						</select>
+					</td>
+				</tr>
+				<tr id="trGWHTurboBoost" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Select to always Turbo boost (500m)"><b>Always Turbo Boost</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<select id="selectGWHUseTurboBoost" onchange="saveGWH2016();">
+							<option value="false">False</option>
+							<option value="true">True</option>
+						</select>
+					</td>
+				</tr>
+				<tr id="trGWHFlying" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Select minimum AA to take flight"><b>Min AA to Fly (&ge;)</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<input type="number" id="inputMinAA" min="0" max="9007199254740991" style="width:50px" value="20" onchange="onInputMinAAChanged(this);">
+					</td>
+				</tr>
+				<tr id="trGWHFlyingFirework" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Select minimum firework to take flight"><b>Min Firework to Fly (&ge;)</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<input type="number" id="inputMinFirework" min="0" max="9007199254740991" style="width:50px" value="20" onchange="onInputMinWorkChanged(this);">
+					</td>
+				</tr>
+				<tr id="trGWHFlyingLand" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Select whether land after firework run out"><b>Land after Firework Run Out</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<select id="selectGWHLandAfterRunOutFirework" onchange="saveGWH2016();">
+							<option value="false">False</option>
+							<option value="true">True</option>
+						</select>
+					</td>
+				</tr>
+				<tr id="trSCCustom" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Select custom algorithm"><b>SC Custom Algorithm</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<select id="selectSCHuntZone" style="width:75px" onchange="initControlsSCCustom();">
+							<option value="ZONE_NOT_DIVE">Surface</option>
+							<option value="ZONE_DEFAULT">Default</option>
+							<option value="ZONE_CORAL">Coral</option>
+							<option value="ZONE_SCALE">Scale</option>
+							<option value="ZONE_BARNACLE">Barnacle</option>
+							<option value="ZONE_TREASURE">Treasure</option>
+							<option value="ZONE_DANGER">Danger</option>
+							<option value="ZONE_DANGER_PP">Danger PP MT</option>
+							<option value="ZONE_DANGER_PP_LOTA">Danger PP LOTA</option>
+							<option value="ZONE_OXYGEN">Oxygen</option>
+							<option value="ZONE_BONUS">Bonus</option>
+						</select>
+						<select id="selectSCHuntZoneEnable" style="width:75px;display:none" onchange="onSelectSCHuntZoneEnable();">
+							<option value="true">Hunt</option>
+							<option value="false">Jet Through</option>
+						</select>
+						<select id="selectSCHuntBait" style="width:75px;" onchange="onSelectSCHuntBait();">
+							<option value="Brie Cheese">Brie</option>
+							<option value="Gouda">Gouda</option>
+							<option value="SUPER">SUPER|brie+</option>
+						</select>
+						<select id="selectSCHuntTrinket" style="width:75px;" onchange="onSelectSCHuntTrinket();">
+							<option value="None">None</option>
+							<option value="EAC">EAC</option>
+							<option value="scAnchorTreasure">GAC, EAC</option>
+							<option value="scAnchorDanger">SAC, EAC</option>
+							<option value="UAC">UAC</option>
+						</select>
+					</td>
+				</tr>
+				<tr id="trSCCustomUseSmartJet" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Select to always use Smart Water Jet Charm"><b>Use Smart Jet</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<select id="selectSCUseSmartJet" onchange="onSelectSCUseSmartJet();">
+							<option value="false">False</option>
+							<option value="true">True</option>
+						</select>
+					</td>
+				</tr>
+				<tr id="trLabyrinth" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Select a district to focus on"><b>District to Focus</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<select id="labyrinthDistrict" onchange=
+						"saveDistrictFocus(value);
+						loadLabyrinthHallway();
+						">
+							<option value="None">None</option>
+							<option value="FEALTY">Fealty</option>
+							<option value="TECH">Tech</option>
+							<option value="SCHOLAR">Scholar</option>
+							<option value="TREASURY">Treasury</option>
+							<option value="FARMING">Farming</option>
+						</select>
+					</td>
+				</tr>
+				<tr id="trLabyrinthDisarm" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Select to disarm cheese at X last hunt in hallway when total clues near 100"><b>Security Disarm</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<select id="selectLabyrinthDisarm" onchange="onSelectLabyrinthDisarm();">
+							<option value="false">False</option>
+							<option value="true">True</option>
+						</select>&nbsp;&nbsp;At Last&nbsp;
+						<input type="number" id="inputLabyrinthLastHunt" min="1" max="10" style="width:40px" value="10" onchange="onInputLabyrinthLastHuntChanged();">&nbsp;Hunt(s) in Hallway Near 100 Total Clues
+					</td>
+				</tr>
+				<tr id="trLabyrinthArmOtherBase" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Select to arm other base if Compass Magnet Charm is currently armed"><b>Arm Other Base</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<select id="selectLabyrinthOtherBase" onchange="onSelectLabyrinthOtherBase();">
+							<option value="false">False</option>
+						</select>&nbsp;&nbsp;If Compass Magnet Charm is armed
+					</td>
+				</tr>
+				<tr id="trLabyrinthDisarmCompass" style="display:none;">
+					<td style="height:24px; text-align:right;"><a><b>Disarm Compass Magnet</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<select id="selectLabyrinthDisarmCompass" onchange="onSelectLabyrinthDisarmCompass();">
+							<option value="true">True</option>
+							<option value="false">False</option>
+						</select>&nbsp;&nbsp;If Dead End Clue &le; :&nbsp;
+						<input type="number" id="inputLabyrinthDEC" min=0 max=100 style="width:40px" value="0" onchange="onInputLabyrinthDECChanged(this);">
+					</td>
+				</tr>
+				<tr id="trPriorities15" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Select hallway priorities when focus-district clues less than 15"><b>Priorities (Focus-District Clues < 15)</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<select id="selectHallway15Plain" onchange="saveLabyrinthHallway();">
+							<option value="lp">Long Plain Hallway First</option>
+							<option value="sp">Short Plain Hallway First</option>
+						</select>
+					</td>
+				</tr>
+				<tr id="trPriorities1560" style="display:table-row;">
+					<td style="height:24px; text-align:right;"><a title="Select hallway priorities when focus-district clues within 15 and 60"><b>Priorities (15 < Focus-District Clues < 60)</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<select id="selectHallway1560Superior" onchange="saveLabyrinthHallway();">
+							<option value="ls">Long Superior Hallway First</option>
+							<option value="ss">Short Superior Hallway First</option>
+						</select>
+						<select id="selectHallway1560Plain" onchange="saveLabyrinthHallway();">
+							<option value="lp">Long Plain Hallway First</option>
+							<option value="sp">Short Plain Hallway First</option>
+						</select>
+					</td>
+				</tr>
+				<tr id="trPriorities60" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Select hallway priorities when focus-district clues more than 60"><b>Priorities (Focus-District Clues > 60)</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<select id="selectHallway60Epic" onchange="saveLabyrinthHallway();">
+							<option value="le">Long Epic Hallway First</option>
+							<option value="se">Short Epic Hallway First</option>
+						</select>
+						<select id="selectHallway60Superior" onchange="saveLabyrinthHallway();">
+							<option value="ls">Long Superior Hallway First</option>
+							<option value="ss">Short Superior Hallway First</option>
+						</select>
+						<select id="selectHallway60Plain" onchange="saveLabyrinthHallway();">
+							<option value="lp">Long Plain Hallway First</option>
+							<option value="sp">Short Plain Hallway First</option>
+						</select>
+					</td>
+				</tr>
+				<tr id="trLabyrinthOtherHallway" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Choose doors other than focused door when there is no available focused door to be choosen"><b>Open Non-Focus Door</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<select id="chooseOtherDoors" onchange=
+						"saveLabyrinthHallway();
+						if (value == 'false')
+							document.getElementById('typeOtherDoors').disabled='disabled'; 
+						else
+							document.getElementById('typeOtherDoors').disabled=''; 
+						">
+							<option value="false">False</option>
+							<option value="true">True</option>
+						</select>&nbsp;&nbsp;<a title="Select a choosing type for non-focused doors"><b>Choosing Type:</b></a>&emsp;
+						<select id="typeOtherDoors" onchange="saveLabyrinthHallway();">
+							<option value="SHORTEST_ONLY">Shortest Length Only</option>
+							<option value="FEWEST_ONLY">Fewest Clue Only</option>
+							<option value="SHORTEST_FEWEST">Shortest Length => Fewest Clue</option>
+							<option value="FEWEST_SHORTEST">Fewest Clue => Shortest Length</option>
+						</select>
+					</td>
+				</tr>
+				<tr id="trLabyrinthWeaponFarming" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Select weapon type in farming hallways"><b>Weapon Type in Farming</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<select id="selectLabyrinthWeaponType" onchange="onSelectLabyrinthWeaponType();">
+							<option value="Forgotten">Forgotten</option>
+							<option value="Arcane">Arcane</option>
+						</select>
+					</td>
+				</tr>
+				<tr id="trZokorTrapSetup" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Select trap setup under different boss status"><b>Trap Setup When</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<select id="selectZokorBossStatus" onchange="onSelectZokorBossStatus();">
+							<option value="ACTIVE">Boss Active</option>
+							<option value="INCOMING">Boss Incoming</option>
+							<option value="DEFEATED">Boss Defeated</option>
+						</select>&nbsp;&nbsp;
+						<select id="selectZokorBait" onchange="onSelectZokorBait();">
+							<option value="Glowing Gruyere">GG</option>
+							<option value="SUPER">SB+</option>
+							<option value="Gouda">Gouda</option>
+							<option value="Brie Cheese">Brie</option>
+						</select>&nbsp;&nbsp;
+						<select id="selectZokorTrinket" onchange="onSelectZokorTrinket();">
+						</select>
+					</td>
+				</tr>
+				<tr id="trFWWave" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Select FW wave"><b>Wave</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<select id="selectFWWave" onchange="onSelectFWWaveChanged();">
+							<option value="1">1</option>
+							<option value="2">2</option>
+							<option value="3">3</option>
+							<option value="4">4</option>
+						</select>
+					</td>
+				</tr>
+				<tr id="trFWTrapSetup" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Select trap setup based on certain FW wave"><b>Trap Setup</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<select id="selectFWTrapSetupWeapon" onchange="onSelectFWTrapSetupWeapon();">
+							<option value="Weapon A">Weapon A</option>
+							<option value="Weapon B">Weapon B</option>
+						</select>
+						<select id="selectFWTrapSetupBase" onchange="onSelectFWTrapSetupBase();">
+							<option value="Base A">Base A</option>
+							<option value="Base B">Base B</option>
+						</select>
+					</td>
+				</tr>
+				<tr id="trFW4TrapSetup" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Select trap setup based on warden status"><b>Trap Setup</b></a>
+						<select id="selectFW4WardenStatus" onchange="onSelectFW4WardenStatus();">
+							<option value="before">Before</option>
+							<option value="after">After</option>
+						</select><a><b> Clear Warden</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;
+					</td>
+					<td style="height:24px">
+						<select id="selectFW4TrapSetupWeapon" style="width: 75px" onchange="onSelectFW4TrapSetupWeapon();">
+							<option value="Weapon A">Weapon A</option>
+							<option value="Weapon B">Weapon B</option>
+						</select>
+						<select id="selectFW4TrapSetupBase" style="width: 75px" onchange="onSelectFW4TrapSetupBase();">
+							<option value="Base A">Base A</option>
+							<option value="Base B">Base B</option>
+						</select>
+						<select id="selectFW4TrapSetupTrinket" style="width: 75px" onchange="onSelectFW4TrapSetupTrinket();">
+							<option value="Trinket A">Trinket A</option>
+							<option value="Trinket B">Trinket B</option>
+						</select>
+						<select id="selectFW4TrapSetupBait" onchange="onSelectFW4TrapSetupBait();">
+							<option value="None">None</option>
+							<option value="Brie Cheese">Brie</option>
+							<option value="Toxic Brie">Toxic Brie</option>
+							<option value="Gouda">Gouda</option>
+							<option value="SUPER">SB+</option>
+							<option value="Toxic SUPER">Toxic SB+</option>
+						</select>
+					</td>
+				</tr>
+				<tr id="trFWFocusType" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Select either Normal (Warrior, Scout, Archer) or Special (Cavalry, Mage)"><b>Soldier Type to Focus</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<select id="selectFWFocusType" onchange="onSelectFWFocusTypeChanged();">
+							<option value="NORMAL">Normal</option>
+							<option value="SPECIAL">Special</option>
+						</select>&nbsp;&nbsp;<a title="Select which soldier type comes first based on population"><b>Priorities:</b></a>&emsp;
+						<select id="selectFWPriorities" onchange="onSelectFWPrioritiesChanged();">
+							<option value="HIGHEST">Highest Population First</option>
+							<option value="LOWEST">Lowest Population First</option>
+						</select>
+					</td>
+				</tr>
+				<tr id="trFWStreak" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Select streak"><b>Streak</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<select id="selectFWStreak" onchange="onSelectFWStreakChanged();">
+							<option value="0">0</option>
+							<option value="1">1</option>
+							<option value="2">2</option>
+							<option value="3">3</option>
+							<option value="4">4</option>
+							<option value="5">5</option>
+							<option value="6">6</option>
+							<option value="7">7</option>
+							<option value="8">8</option>
+							<option value="9">9</option>
+							<option value="10">10</option>
+							<option value="11">11</option>
+							<option value="12">12</option>
+							<option value="13">13</option>
+							<option value="14">14</option>
+							<option value="15">15</option>
+						</select>
+						<select id="selectFWCheese" onchange="onSelectFWCheeseChanged();">
+							<option value="Brie Cheese">Brie</option>
+							<option value="Gouda">Gouda</option>
+							<option value="SUPER">SUPER|brie+</option>
+						</select>
+						<select id="selectFWCharmType" onchange="onSelectFWCharmTypeChanged();">
+							<option value="NORMAL">Warpath</option>
+							<option value="SUPER">Super Warpath</option>
+						</select>
+						<select id="selectFWSpecial" onchange="onSelectFWSpecialChanged();">
+							<option value="None">None</option>
+							<option value="COMMANDER">Commander</option>
+							<option value="GARGANTUA">Gargantua</option>
+							<option value="GARGANTUA_GGC" disabled="disabled">Gargantua - GGC</option>
+						</select>
+					</td>
+				</tr>
+				<tr id="trFWLastType" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Select config when there is only one soldier type left and whether to include Artillery in checking last soldier"><b>Last Soldier Type</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<select id="selectFWLastTypeConfig" onchange="onSelectFWLastTypeConfigChanged();">
+							<option value="CONFIG_STREAK">Follow Streak Config</option>
+							<option value="CONFIG_GOUDA">Gouda & No Warpath Charm</option>
+							<option value="CONFIG_UNCHANGED">Trap Setup Unchanged</option>
+						</select>&nbsp;&nbsp;<b>Include Artillery:</b>&nbsp;&nbsp;
+						<select id="selectFWLastTypeConfigIncludeArtillery" onchange="onSelectFWLastTypeConfigIncludeArtillery();">
+							<option value="true">True</option>
+							<option value="false">False</option>
+						</select>
+					</td>
+				</tr>
+				<tr id="trFWSupportConfig" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Select whether to disarm any Warpath Charm when supports are gone"><b>Disarm Warpath Charm</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<select id="selectFWSupportConfig" onchange="onSelectFWSupportConfig();">
+							<option value="false">False</option>
+							<option value="true">True</option>
+						</select>&nbsp;&nbsp;When Support Retreated
+					</td>
+				</tr>
+				<tr id="trBRConfig" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Select the mist tier to hunt"><b>Hunt At</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<select id="selectBRHuntMistTier" onchange="onSelectBRHuntMistTierChanged();">
+							<option value="Red">Red</option>
+							<option value="Green">Green</option>
+							<option value="Yellow">Yellow</option>
+							<option value="None">None</option>
+						</select>&nbsp;&nbsp;Mist Tier
+					</td>
+				</tr>
+				<tr id="trBRToggle" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Select the amount of hunt to toggle canister at red mist tier"><b>Toggle Canister Every</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<input type="number" id="ToggleCanisterInput" min="1" max="10" value="1" onchange="onInputToggleCanisterChanged();">&nbsp;&nbsp;Hunt(s)
+					</td>
+				</tr>
+				<tr id="trBRTrapSetup" style="display:none;">
+					<td style="height:24px; text-align:right;"><a title="Select trap setup combination for respective mist tier"><b>Trap Setup</b></a>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
+					<td style="height:24px">
+						<select id="selectBRTrapWeapon" onchange="onSelectBRTrapWeaponChanged();">
+							<option value="Mysteriously unYielding">MYNORCA</option>
+							<option value="Focused Crystal Laser">FCL</option>
+							<option value="Multi-Crystal Laser">MCL</option>
+							<option value="Biomolecular Re-atomizer Trap">BRT</option>
+							<option value="Crystal Tower">CT</option>
+						</select>
+						<select id="selectBRTrapBase" onchange="onSelectBRTrapBaseChanged();">
+							<option value="Clockwork Base">Clockwork</option>
+							<option value="Fissure Base">Fissure</option>
+							<option value="Rift Base">Rift</option>
+							<option value="Fracture Base">Fracture</option>
+							<option value="Enerchi Induction Base">Enerchi</option>
+							<option value="Attuned Enerchi Induction Base">A. Enerchi</option>
+							<option value="Minotaur Base">Minotaur</option>
+						</select>
+						<select id="selectBRTrapTrinket" onchange="onSelectBRTrapTrinketChanged();">
+							<option value="Rift Ultimate Luck">Rift Ultimate Luck</option>
+							<option value="Rift Ultimate Power">Rift Ultimate Power</option>
+							<option value="Ultimate Luck">Ultimate Luck</option>
+							<option value="Ultimate Power">Ultimate Power</option>
+							<option value="Rift Power">Rift Power</option>
+							<option value="Super Rift Vacuum">Super Rift Vacuum</option>
+							<option value="Rift Vacuum">Rift Vacuum</option>
+							<option value="Enerchi">Enerchi</option>
+							<option value="NoAbove">None of the above</option>
+							<option value="None">None</option>
+						</select>
+						<select id="selectBRTrapBait" onchange="onSelectBRTrapBaitChanged();">
+							<option value="Polluted Parmesan">PP</option>
+							<option value="Terre Ricotta">Terre</option>
+							<option value="Magical String">Magical</option>
+							<option value="Brie String">Brie</option>
+							<option value="Swiss String">Swiss</option>
+							<option value="Marble String">Marble</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td style="height:24px; text-align:right;" colspan="2">
+						<input type="button" id="AlgoConfigSaveInput" title="Save changes of Event or Location without reload, take effect after current hunt" value="Apply" onclick="setSessionToLocal();">
+						<input type="button" id="AlgoConfigSaveReloadInput" title="Save changes of Event or Location with reload, take effect immediately" value="Apply & Reload" onclick="setSessionToLocal();">&nbsp;&nbsp;&nbsp;
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	<hr>
+	</div>
+</div>
+<script type="text/javascript">
+	var objDefaultFGAR = {
+		order : ['FG','AR'],
+		weapon : new Array(2).fill(''),
+		base : new Array(2).fill(''),
+		trinket : new Array(2).fill(''),
+		bait : new Array(2).fill('')
+	};
+	var objDefaultBCJOD = {
+		order : ['JOD','LOW','MID','HIGH'],
+		weapon : new Array(4).fill(''),
+		base : new Array(4).fill(''),
+		trinket : new Array(4).fill(''),
+		bait : new Array(4).fill('')
+	};
+	var objDefaultBWRift = {
+		order : ['NONE','GEARWORKS','ANCIENT','RUNIC','TIMEWARP','GUARD','SECURITY','FROZEN','FURNACE','INGRESS','PURSUER','ACOLYTE_CHARGING','ACOLYTE_DRAINING','ACOLYTE_DRAINED','LUCKY','HIDDEN'],
+		master : {
+			weapon : new Array(32).fill('Mysteriously unYielding'),
+			base : new Array(32).fill('Fissure Base'),
+			trinket : new Array(32).fill('Rift Vacuum Charm'),
+			bait : new Array(32).fill('Brie String'),
+			activate : new Array(32).fill(false),
+		},
+		specialActivate : {
+			forceActivate : new Array(32).fill(false),
+			remainingLootActivate : new Array(32).fill(1),
+			forceDeactivate : new Array(32).fill(false),
+			remainingLootDeactivate : new Array(32).fill(1)
+		},
+		gw : {
+			weapon : new Array(4).fill('MASTER'),
+			base : new Array(4).fill('MASTER'),
+			trinket : new Array(4).fill('MASTER'),
+			bait : new Array(4).fill('MASTER'),
+			activate : new Array(4).fill('MASTER'),
+		},
+		al : {
+			weapon : new Array(4).fill('MASTER'),
+			base : new Array(4).fill('MASTER'),
+			trinket : new Array(4).fill('MASTER'),
+			bait : new Array(4).fill('MASTER'),
+			activate : new Array(4).fill('MASTER'),
+		},
+		rl : {
+			weapon : new Array(4).fill('MASTER'),
+			base : new Array(4).fill('MASTER'),
+			trinket : new Array(4).fill('MASTER'),
+			bait : new Array(4).fill('MASTER'),
+			activate : new Array(4).fill('MASTER'),
+		},
+		gb : {
+			weapon : new Array(14).fill('MASTER'),
+			base : new Array(14).fill('MASTER'),
+			trinket : new Array(14).fill('MASTER'),
+			bait : new Array(14).fill('MASTER'),
+			activate : new Array(14).fill('MASTER'),
+		},
+		ic : {
+			weapon : new Array(8).fill('MASTER'),
+			base : new Array(8).fill('MASTER'),
+			trinket : new Array(8).fill('MASTER'),
+			bait : new Array(8).fill('MASTER'),
+			activate : new Array(8).fill('MASTER'),
+		},
+		fa : {
+			weapon : new Array(32).fill('MASTER'),
+			base : new Array(32).fill('MASTER'),
+			trinket : new Array(32).fill('MASTER'),
+			bait : new Array(32).fill('MASTER'),
+			activate : new Array(32).fill('MASTER'),
+		},
+		choosePortal : false,
+		choosePortalAfterCC : false,
+		priorities : ['SECURITY', 'FURNACE', 'PURSUER', 'ACOLYTE', 'LUCKY', 'HIDDEN', 'TIMEWARP', 'RUNIC', 'ANCIENT', 'GEARWORKS', 'GEARWORKS', 'GEARWORKS', 'GEARWORKS'],
+		prioritiesCursed : ['SECURITY', 'FURNACE', 'PURSUER', 'ANCIENT', 'GEARWORKS', 'RUNIC', 'GEARWORKS', 'GEARWORKS', 'GEARWORKS', 'GEARWORKS', 'GEARWORKS', 'GEARWORKS', 'GEARWORKS'],
+		minTimeSand : [70,70,50,50,50,50,40,40,999],
+		minRSCType : 'NUMBER',
+		minRSC : 0,
+		enterMinigameWCurse : false
+	};
+
+	function limitMinMax(value, min, max){
+		value = parseInt(value);
+		min = parseInt(min);
+		max = parseInt(max);
+		if(value < min)
+			value = min;
+		else if(value > max)
+			value = max;
+		return value;
+	}
+	
+	function isNullOrUndefined(obj){
+		return (obj === null || obj === undefined);
+	}
+
+	function onIdGetPreferenceClicked(){
+		var objPreference = {};
+		var temp = '';
+		for(var i=0;i<window.localStorage.length;i++){
+			temp = window.localStorage.key(i);
+			if(temp.indexOf('KR') == 0)
+				continue;
+			objPreference[temp] = window.localStorage.getItem(temp);
+		}
+		saveFile(JSON.stringify(objPreference),'preference.txt');
+	}
+	
+	function onIdRestoreClicked(){
+		var idRestore = document.getElementById('idRestore');
+		var inputFiles = document.getElementById('inputFiles');
+		if (window.FileReader) {
+			if(inputFiles &&  window.sessionStorage.getItem('bRestart') != 'true'){
+				inputFiles.click();
+			}
+		}
+		else {
+			alert('The File APIs are not fully supported in this browser.');
+		}
+	}
+	
+	function handleFiles(files) {
+		if(files.length < 1)
+			return;
+		var reader = new FileReader();
+		reader.onloadend = function(evt) {
+			if (evt.target.readyState == FileReader.DONE) { // DONE == 2
+				var arr = evt.target.result.split('\r\n');
+				var arrSplit = [];
+				var bRestart = false;
+				for(var i=0;i<arr.length;i++){
+					if(arr[i].indexOf('|') > -1){
+						arrSplit = arr[i].split('|');
+						if(arrSplit.length == 2 && Number.isNaN(Date.parse(arrSplit[0]))){
+							bRestart = true;
+						}
+					}
+				}
+				if(bRestart){
+					alert('Please restart browser to take effect!');
+					window.sessionStorage.setItem('bRestart', 'true');
+					document.getElementById('idRestore').firstChild.textContent = 'Restart browser is required!';
+					document.getElementById('idRestore').style = "color:red";
+				}
+				else{
+					alert('Invalid preference file!');
+				}
+			}
+		};
+		var blob = files[0].slice(0, files[0].size);
+		reader.readAsText(blob);
+	}
+	
+	function onIdGetLogClicked(){
+		var key;
+		var str = "";
+		for(var i=0;i<window.sessionStorage.length;i++){
+			key = window.sessionStorage.key(i);
+			if(key.indexOf('Log_') > -1){
+				temp = parseInt(key.split('_')[1]);
+				temp = (Number.isInteger(temp)) ? (new Date(temp)).toISOString() : key;
+				str += temp + "|" + window.sessionStorage.getItem(key);
+				str += "\r\n";
+			}
+		}
+		saveFile(str,'log.txt');
+	}
+	
+	function saveFile(content, filename){
+		var a = document.createElement("a");
+		var file = new Blob([content], {type: 'text/plain'});
+		a.href = URL.createObjectURL(file);
+		a.download = filename;
+		a.click();
+	}
+	
+	function onSelectSpecialFeature(){
+		saveSpecialFeature();
+	}
+	
+	function saveSpecialFeature(){
+		var selectSpecialFeature = document.getElementById('selectSpecialFeature');
+		window.sessionStorage.setItem('SpecialFeature', selectSpecialFeature.value);
+	}
+	
+	function initControlsSpecialFeature(){
+		var selectSpecialFeature = document.getElementById('selectSpecialFeature');
+		var storageValue = window.sessionStorage.getItem('SpecialFeature');
+		if(storageValue === null || storageValue === undefined){
+			storageValue = 'None';
+		}
+		selectSpecialFeature.value = storageValue;
+	}
+	
+	function onSelectMapHuntingChanged(){
+		saveMapHunting();
+		initControlsMapHunting();
+	}
+	
+	function saveMapHunting(){
+		var selectMapHunting = document.getElementById('selectMapHunting');
+		var selectMouseList = document.getElementById('selectMouseList');
+		var selectWeapon = document.getElementById('selectWeapon');
+		var selectBase = document.getElementById('selectBase');
+		var selectTrinket = document.getElementById('selectTrinket');
+		var selectBait = document.getElementById('selectBait');
+		var selectLeaveMap = document.getElementById('selectLeaveMap');
+		var inputUncaughtMouse = document.getElementById('inputUncaughtMouse');
+		var selectCatchLogic = document.getElementById('selectCatchLogic');
+		var objDefaultMapHunting = {
+			status : false,
+			selectedMouse : [],
+			logic : 'OR',
+			weapon : 'Remain',
+			base : 'Remain',
+			trinket : 'Remain',
+			bait : 'Remain',
+			leave : false
+		};
+		var storageValue = JSON.parse(window.sessionStorage.getItem('MapHunting'));
+		if(storageValue === null || storageValue === undefined)
+			storageValue = objDefaultMapHunting;
+		
+		storageValue.status = (selectMapHunting.value == 'true');
+		/*if(inputUncaughtMouse.value === '')
+			storageValue.selectedMouse = [];
+		else
+			storageValue.selectedMouse = inputUncaughtMouse.value.split(',');*/
+		storageValue.logic = selectCatchLogic.value;
+		storageValue.weapon = selectWeapon.value;
+		storageValue.base = selectBase.value;
+		storageValue.trinket = selectTrinket.value;
+		storageValue.bait = selectBait.value;
+		storageValue.leave = (selectLeaveMap.value == 'true');
+		window.sessionStorage.setItem('MapHunting', JSON.stringify(storageValue));
+	}
+	
+	function initControlsMapHunting(){
+		var trUncaughtMouse = document.getElementById('trUncaughtMouse');
+		var trSelectedUncaughtMouse = document.getElementById('trSelectedUncaughtMouse');
+		var trCatchLogic = document.getElementById('trCatchLogic');
+		var selectMapHunting = document.getElementById('selectMapHunting');
+		var trMapHuntingTrapSetup = document.getElementById('trMapHuntingTrapSetup');
+		var trMapHuntingLeave = document.getElementById('trMapHuntingLeave');
+		var inputUncaughtMouse = document.getElementById('inputUncaughtMouse');
+		var selectCatchLogic = document.getElementById('selectCatchLogic');
+		var selectWeapon = document.getElementById('selectWeapon');
+		var selectBase = document.getElementById('selectBase');
+		var selectTrinket = document.getElementById('selectTrinket');
+		var selectBait = document.getElementById('selectBait');
+		var selectLeaveMap = document.getElementById('selectLeaveMap');
+		var storageValue = window.sessionStorage.getItem('MapHunting');
+		if(storageValue === null){
+			selectMapHunting.selectedIndex = 0;
+			trUncaughtMouse.style.display = 'none';
+			trMapHuntingTrapSetup.style.display = 'none';
+			trMapHuntingLeave.style.display = 'none';
+			//inputUncaughtMouse.value = '';
+			selectCatchLogic.selectedIndex = -1;
+			selectWeapon.selectedIndex = -1;
+			selectBase.selectedIndex = -1;
+			selectTrinket.selectedIndex = -1;
+			selectBait.selectedIndex = -1;
+			selectLeaveMap.selectedIndex = -1;
+		}
+		else{
+			storageValue = JSON.parse(storageValue);
+			selectMapHunting.value = storageValue.status;
+			trUncaughtMouse.style.display = (storageValue.status) ? 'table-row' : 'none';
+			trSelectedUncaughtMouse.style.display = (storageValue.status) ? 'table-row' : 'none';
+			trCatchLogic.style.display = (storageValue.status) ? 'table-row' : 'none';
+			trMapHuntingTrapSetup.style.display = (storageValue.status) ? 'table-row' : 'none';
+			trMapHuntingLeave.style.display = (storageValue.status) ? 'table-row' : 'none';
+			//inputUncaughtMouse.value = storageValue.selectedMouse.join(',');
+			selectCatchLogic.value = storageValue.logic;
+			selectWeapon.value = storageValue.weapon;
+			selectBase.value = storageValue.base;
+			selectTrinket.value = storageValue.trinket;
+			selectBait.value = storageValue.bait;
+			selectLeaveMap.value = storageValue.leave;
+		}
+	}
+	
+	function onInputSelectMouse(){
+		var inputUncaughtMouse = document.getElementById('inputUncaughtMouse');
+		var selectMouseList = document.getElementById('selectMouseList');
+		if(inputUncaughtMouse.value.indexOf(selectMouseList.value) < 0){
+			if(inputUncaughtMouse.value.length !== 0)
+				inputUncaughtMouse.value = selectMouseList.value + ',' + inputUncaughtMouse.value;
+			else
+				inputUncaughtMouse.value = selectMouseList.value;
+		}
+		saveMapHunting();
+	}
+	
+	function onInputGetMouse(){
+		try {
+			var objData = {
+				sn : 'Hitgrab',
+				hg_is_ajax : 1,
+				action : 'info',
+				view_state : 'noMap',
+				uh : '3HvFW5fs'
+			};
+			
+			jQuery.ajax({
+				type: 'POST',
+				url: 'https://www.mousehuntgame.com/managers/ajax/users/relichunter.php',
+				data: objData,
+				contentType: 'application/x-www-form-urlencoded',
+				dataType: 'json',
+				xhrFields: {
+					withCredentials: false
+				},
+				statusCode: {
+					200: function () {console.log(this);}
+				},
+				success: function (data){
+					console.log(data);
+				},
+				error: function (error){
+					console.perror('refreshTrapList:',error);
+				}
+			});
+		} catch (e) {
+			console.perror('refreshTrapList',e);
+		}
+	}
+	
+	function onInputClearUncaughtMouse(){
+		document.getElementById('inputUncaughtMouse').value = "";
+		saveMapHunting();
+	}
+	
+	function onSelectCatchLogicChanged(){
+		saveMapHunting();
+	}
+	
+	function onSelectWeaponChanged(){
+		saveMapHunting();
+	}
+	
+	function onSelectBaseChanged(){
+		saveMapHunting();
+	}
+	
+	function onSelectTrinketChanged(){
+		saveMapHunting();
+	}
+	
+	function onSelectBaitChanged(){
+		saveMapHunting();
+	}
+	
+	function onSelectLeaveMap(){
+		saveMapHunting();
+	}
+	
+	var arrKey = ['SCCustom','Labyrinth_','LGArea','eventLocation','FW_','BRCustom','SGZT','Zokor','MapHunting','ZTower','BestTrap','Iceberg','WWRift','GES','FRox','GWH2016','SpecialFeature','BWRift','BC_JOD','FG_AR'];
+	function setLocalToSession(){
+		var i, j, key;
+		for(i=0;i<window.localStorage.length;i++){
+			key = window.localStorage.key(i);
+			for(j=0;j<arrKey.length;j++){
+				if(key.indexOf(arrKey[j]) > -1){
+					window.sessionStorage.setItem(key, window.localStorage.getItem(key));
+					break;
+				}
+			}
+		}
+	}
+	
+	function setSessionToLocal(){
+		if(window.sessionStorage.length==0)
+			return;
+
+		var i, j, key;
+		for(i=0;i<window.sessionStorage.length;i++){
+			key = window.sessionStorage.key(i);
+			for(j=0;j<arrKey.length;j++){
+				if(key.indexOf(arrKey[j]) > -1){
+					window.localStorage.setItem(key, window.sessionStorage.getItem(key));
+					break;
+				}
+			}
+		}
+	}
+	
+	function onInputResetReload(){
+		var eventAlgo = document.getElementById('eventAlgo');
+		var keyName;
+		switch (eventAlgo.value) {
+			case 'Bristle Woods Rift':
+				keyName = 'BWRift'; break;
+			case 'Burroughs Rift Custom':
+				keyName = 'BRCustom'; break;
+			case 'All LG Area':
+				keyName = 'LGArea'; break;
+			case 'SG':
+				keyName = 'SGarden'; break;
+			case 'ZT':
+				keyName = 'ZTower'; break;
+			case 'Sunken City Custom':
+				keyName = 'SCCustom'; break;
+			case 'Labyrinth':
+				keyName = 'Labyrinth'; break;
+			case 'Zokor':
+				keyName = 'Zokor'; break;
+			case 'Fiery Warpath':
+				keyName = 'FW'; break;
+			case 'Furoma Rift':
+				keyName = 'FRift'; break;
+			case 'WWRift':
+				keyName = 'WWRift'; break;
+			case 'GES':
+				keyName = 'GES'; break;
+			default:
+				break;
+		}
+		if(!(keyName === null || keyName === undefined)){
+			window.sessionStorage.removeItem(keyName);
+			window.localStorage.removeItem(keyName);
+		}
+	}
+	
+	function onSelectBestTrapPowerType(){
+		initControlsBestTrap();
+	}
+	
+	function onSelectBestTrapWeapon(){
+		saveBestTrap();
+	}
+	
+	function onSelectBestTrapBaseType(){
+		initControlsBestTrap();
+	}
+	
+	function onSelectBestTrapBase(){
+		saveBestTrap();
+	}
+	
+	function initControlsBestTrap(){
+		var selectBestTrapPowerType = document.getElementById('selectBestTrapPowerType');
+		var selectBestTrapWeapon = document.getElementById('selectBestTrapWeapon');
+		var selectBestTrapBaseType = document.getElementById('selectBestTrapBaseType');
+		var selectBestTrapBase = document.getElementById('selectBestTrapBase');
+		var storageValue = window.sessionStorage.getItem('BestTrap');
+		if (storageValue === null || storageValue === undefined){
+			selectBestTrapWeapon.selectedIndex = -1;
+			selectBestTrapBase.selectedIndex = -1;
+		}
+		else{
+			storageValue = JSON.parse(storageValue);
+			selectBestTrapWeapon.value = storageValue.weapon[selectBestTrapPowerType.value];
+			selectBestTrapBase.value = storageValue.base[selectBestTrapBaseType.value];
+		}
+	}
+	
+	function saveBestTrap(){
+		var selectBestTrapPowerType = document.getElementById('selectBestTrapPowerType');
+		var selectBestTrapWeapon = document.getElementById('selectBestTrapWeapon');
+		var selectBestTrapBaseType = document.getElementById('selectBestTrapBaseType');
+		var selectBestTrapBase = document.getElementById('selectBestTrapBase');
+		var storageValue = window.sessionStorage.getItem('BestTrap');
+		if (storageValue === null || storageValue === undefined){
+			var objBestTrapDefault = {
+				weapon : {
+					arcane : '',
+					draconic : '',
+					forgotten : '',
+					hydro : '',
+					law : '',
+					physical : '',
+					rift : '',
+					shadow : '',
+					tactical : ''
+				},
+				base : {
+					luck : '',
+					power : ''
+				}
+			};
+			storageValue = JSON.stringify(objBestTrapDefault);
+		}
+
+		storageValue = JSON.parse(storageValue);
+		storageValue.weapon[selectBestTrapPowerType.value] = selectBestTrapWeapon.value;
+		storageValue.base[selectBestTrapBaseType.value] = selectBestTrapBase.value;
+		window.sessionStorage.setItem('BestTrap', JSON.stringify(storageValue));
+	}
+	
+	function onInputMinAAChanged(input){
+		var value = parseInt(input.value);
+		var nMin = parseInt(input.min);
+		var nMax = parseInt(input.max);
+		if(value < nMin)
+			input.value = nMin;
+		else if(value > nMax)
+			input.value = nMax;
+		saveGWH2016();
+	}
+	
+	function onInputMinWorkChanged(input){
+		var value = parseInt(input.value);
+		var nMin = parseInt(input.min);
+		var nMax = parseInt(input.max);
+		if(value < nMin)
+			input.value = nMin;
+		else if(value > nMax)
+			input.value = nMax;
+		saveGWH2016();
+	}
+	
+	function onSelectGWHTrinketChanged(){
+		saveGWH2016();
+		initControlsGWH2016();
+	}
+	
+	function initControlsGWH2016(bAutoChangeZone){
+		if(isNullOrUndefined(bAutoChangeZone))
+			bAutoChangeZone = false;
+		var selectGWHZone = document.getElementById('selectGWHZone');
+		var selectGWHWeapon = document.getElementById('selectGWHWeapon');
+		var selectGWHBase = document.getElementById('selectGWHBase');
+		var selectGWHTrinket = document.getElementById('selectGWHTrinket');
+		var selectGWHBait = document.getElementById('selectGWHBait');
+		var selectGWHBoost = document.getElementById('selectGWHBoost');
+		var selectGWHUseTurboBoost = document.getElementById('selectGWHUseTurboBoost');
+		var inputMinAA = document.getElementById('inputMinAA');
+		var inputMinFirework = document.getElementById('inputMinFirework');
+		var selectGWHLandAfterRunOutFirework = document.getElementById('selectGWHLandAfterRunOutFirework');
+		var storageValue = window.sessionStorage.getItem('GWH2016');
+		if(isNullOrUndefined(storageValue)){
+			selectGWHWeapon.selectedIndex = -1;
+			selectGWHBase.selectedIndex = -1;
+			selectGWHTrinket.selectedIndex = -1;
+			selectGWHBait.selectedIndex = -1;
+			selectGWHBoost.selectedIndex = -1;
+			selectGWHUseTurboBoost.selectedIndex = 0;
+			inputMinAA.value = 20;
+			inputMinFirework.value = 20;
+			selectGWHLandAfterRunOutFirework.selectedIndex = 0;
+		}
+		else{
+			storageValue = JSON.parse(storageValue);
+			var nIndex = storageValue.zone.indexOf(selectGWHZone.value);
+			selectGWHWeapon.value = storageValue.weapon[nIndex];
+			selectGWHBase.value = storageValue.base[nIndex];
+			selectGWHTrinket.value = storageValue.trinket[nIndex];
+			selectGWHBait.value = storageValue.bait[nIndex];
+			selectGWHBoost.value = (storageValue.boost[nIndex] === true) ? 'true' : 'false';
+			if(selectGWHTrinket.value.toUpperCase().indexOf('ANCHOR') > -1)
+				selectGWHBoost.disabled = 'disabled';
+			else
+				selectGWHBoost.disabled = '';
+			selectGWHUseTurboBoost.value = (storageValue.turbo === true) ? 'true' : 'false';
+			inputMinAA.value = storageValue.minAAToFly;
+			inputMinFirework.value = storageValue.minFireworkToFly;
+			selectGWHLandAfterRunOutFirework.value = (storageValue.landAfterFireworkRunOut === true) ? 'true' : 'false';
+		}
+	}
+	
+	function saveGWH2016(){
+		var selectGWHZone = document.getElementById('selectGWHZone');
+		var selectGWHWeapon = document.getElementById('selectGWHWeapon');
+		var selectGWHBase = document.getElementById('selectGWHBase');
+		var selectGWHTrinket = document.getElementById('selectGWHTrinket');
+		var selectGWHBait = document.getElementById('selectGWHBait');
+		var selectGWHBoost = document.getElementById('selectGWHBoost');
+		var selectGWHUseTurboBoost = document.getElementById('selectGWHUseTurboBoost');
+		var inputMinAA = document.getElementById('inputMinAA');
+		var inputMinFirework = document.getElementById('inputMinFirework');
+		var selectGWHLandAfterRunOutFirework = document.getElementById('selectGWHLandAfterRunOutFirework');
+		var storageValue = window.sessionStorage.getItem('GWH2016');
+		if(isNullOrUndefined(storageValue)){
+			var objDefaultGWH2016 = {
+				zone : ['ORDER1','ORDER2','NONORDER1','NONORDER2','WINTER_WASTELAND','SNOWBALL_STORM', 'FLYING'],
+				weapon : new Array(7).fill(''),
+				base : new Array(7).fill(''),
+				trinket : new Array(7).fill(''),
+				bait : new Array(7).fill(''),
+				boost : new Array(7).fill(''),
+				turbo : false,
+				minAAToFly : 20,
+				minFireworkToFly : 20,
+				landAfterFireworkRunOut : false
+			};
+			storageValue = JSON.stringify(objDefaultGWH2016);
+		}
+		storageValue = JSON.parse(storageValue);
+		var nIndex = storageValue.zone.indexOf(selectGWHZone.value);
+		storageValue.weapon[nIndex] = selectGWHWeapon.value;
+		storageValue.base[nIndex] = selectGWHBase.value;
+		storageValue.trinket[nIndex] = selectGWHTrinket.value;
+		storageValue.bait[nIndex] = selectGWHBait.value;
+		if(selectGWHTrinket.value.toUpperCase().indexOf('ANCHOR') > -1)
+			storageValue.boost[nIndex] = false;
+		else
+			storageValue.boost[nIndex] = (selectGWHBoost.value == 'true');
+		storageValue.turbo = (selectGWHUseTurboBoost.value == 'true');
+		storageValue.minAAToFly = parseInt(inputMinAA.value);
+		storageValue.minFireworkToFly = parseInt(inputMinFirework.value);
+		storageValue.landAfterFireworkRunOut = (selectGWHLandAfterRunOutFirework.value == 'true');
+		window.sessionStorage.setItem('GWH2016', JSON.stringify(storageValue));
+	}
+	
+	function onSelectSCHuntZoneEnable(){
+		saveSCCustomAlgo();
+	}
+	
+	function onSelectSCHuntBait(){
+		saveSCCustomAlgo();
+	}
+	
+	function onSelectSCHuntTrinket(){
+		saveSCCustomAlgo();
+	}
+	
+	function onSelectSCUseSmartJet(){
+		saveSCCustomAlgo();
+	}
+	
+	function initControlsSCCustom(){
+		var selectSCHuntZone = document.getElementById('selectSCHuntZone');
+		var selectSCHuntZoneEnable = document.getElementById('selectSCHuntZoneEnable');
+		var selectSCHuntBait = document.getElementById('selectSCHuntBait');
+		var selectSCHuntTrinket = document.getElementById('selectSCHuntTrinket');
+		var selectSCUseSmartJet = document.getElementById('selectSCUseSmartJet');
+		var storageValue = window.sessionStorage.getItem('SCCustom');
+		if (storageValue === null || storageValue === undefined){
+			var objSCCustomDefault = {
+				zone : ['ZONE_NOT_DIVE','ZONE_DEFAULT','ZONE_CORAL','ZONE_SCALE','ZONE_BARNACLE','ZONE_TREASURE','ZONE_DANGER','ZONE_DANGER_PP','ZONE_OXYGEN','ZONE_BONUS','ZONE_DANGER_PP_LOTA'],
+				zoneID : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+				isHunt : new Array(11).fill(true),
+				bait : new Array(11).fill('Gouda'),
+				trinket : new Array(11).fill('None'),
+				useSmartJet : false
+			};
+			storageValue = JSON.stringify(objSCCustomDefault);
+		}
+		
+		storageValue = JSON.parse(storageValue);
+		var nIndex = storageValue.zone.indexOf(selectSCHuntZone.value);
+		if(nIndex < 0)
+			nIndex = 0;
+		selectSCHuntZoneEnable.value = storageValue.isHunt[nIndex];
+		selectSCHuntBait.value = storageValue.bait[nIndex];
+		selectSCHuntTrinket.value = storageValue.trinket[nIndex];
+		selectSCUseSmartJet.value = storageValue.useSmartJet;
+		selectSCHuntZoneEnable.style.display = (selectSCHuntZone.value == 'ZONE_NOT_DIVE') ? 'none' : '';
+	}
+	
+	function saveSCCustomAlgo(){	
+		var selectSCHuntZone = document.getElementById('selectSCHuntZone');
+		var selectSCHuntZoneEnable = document.getElementById('selectSCHuntZoneEnable');
+		var selectSCHuntBait = document.getElementById('selectSCHuntBait');
+		var selectSCHuntTrinket = document.getElementById('selectSCHuntTrinket');
+		var selectSCUseSmartJet = document.getElementById('selectSCUseSmartJet');
+		var storageValue = window.sessionStorage.getItem('SCCustom');
+		if (storageValue === null || storageValue === undefined){
+			var objSCCustomDefault = {
+				zone : ['ZONE_NOT_DIVE','ZONE_DEFAULT','ZONE_CORAL','ZONE_SCALE','ZONE_BARNACLE','ZONE_TREASURE','ZONE_DANGER','ZONE_DANGER_PP','ZONE_OXYGEN','ZONE_BONUS','ZONE_DANGER_PP_LOTA'],
+				zoneID : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+				isHunt : new Array(11).fill(true),
+				bait : new Array(11).fill('Gouda'),
+				trinket : new Array(11).fill('None'),
+				useSmartJet : false
+			};
+			storageValue = JSON.stringify(objSCCustomDefault);
+		}
+		
+		storageValue = JSON.parse(storageValue);
+		var nIndex = storageValue.zone.indexOf(selectSCHuntZone.value);
+		if(nIndex < 0)
+			nIndex = 0;
+		storageValue.isHunt[nIndex] = (selectSCHuntZoneEnable.value === 'true');
+		storageValue.bait[nIndex] = selectSCHuntBait.value;
+		storageValue.trinket[nIndex] = selectSCHuntTrinket.value;
+		storageValue.useSmartJet = (selectSCUseSmartJet.value === 'true');
+		window.sessionStorage.setItem('SCCustom', JSON.stringify(storageValue));
+	}
+	
+	function saveDistrictFocus(value){
+		window.sessionStorage.setItem('Labyrinth_DistrictFocus',value);
+	}
+	
+	function onSelectLabyrinthDisarm(){
+		var inputLabyrinthLastHunt = document.getElementById('inputLabyrinthLastHunt');
+		var selectLabyrinthDisarm = document.getElementById('selectLabyrinthDisarm');
+		inputLabyrinthLastHunt.disabled = (selectLabyrinthDisarm.value == 'true') ? '' : 'disabled';
+		saveLabyrinthHallway();
+	}
+	
+	function onSelectLabyrinthOtherBase(){
+		saveLabyrinthHallway();
+	}
+	
+	function onInputLabyrinthLastHuntChanged(){
+		saveLabyrinthHallway();
+	}
+	
+	function onSelectLabyrinthDisarmCompass(){
+		saveLabyrinthHallway();
+	}
+	
+	function onInputLabyrinthDECChanged(input){
+		var value = parseInt(input.value);
+		var nMin = parseInt(input.min);
+		var nMax = parseInt(input.max);
+		if(value < nMin)
+			input.value = nMin;
+		else if(value > nMax)
+			input.value = nMax;
+		saveLabyrinthHallway();
+	}
+	
+	function onSelectLabyrinthWeaponType(){
+		saveLabyrinthHallway();
+	}
+	
+	function saveLabyrinthHallway(){
+		var selectHallway15Plain = document.getElementById('selectHallway15Plain');
+		var selectHallway1560Plain = document.getElementById('selectHallway1560Plain');
+		var selectHallway1560Superior = document.getElementById('selectHallway1560Superior');
+		var selectHallway60Plain = document.getElementById('selectHallway60Plain');
+		var selectHallway60Superior = document.getElementById('selectHallway60Superior');
+		var selectHallway60Epic = document.getElementById('selectHallway60Epic');
+		var selectLabyrinthOtherBase = document.getElementById('selectLabyrinthOtherBase');
+		var selectLabyrinthWeaponType = document.getElementById('selectLabyrinthWeaponType');
+		var objDefaultHallwayPriorities = {
+			between0and14 : ['LP'],
+			between15and59  : ['SP','LS'],
+			between60and100  : ['SP','SS','LE'],
+			chooseOtherDoors : false,
+			typeOtherDoors : "SHORTEST_ONLY",
+			securityDisarm : false,
+			lastHunt : 0,
+			armOtherBase : 'None',
+			weaponFarming : 'Forgotten'
+		};
+		var storageValue = JSON.parse(window.sessionStorage.getItem('Labyrinth_HallwayPriorities'));
+		if(storageValue === null)
+			storageValue = objDefaultHallwayPriorities;
+		
+		storageValue.between0and14 = [selectHallway15Plain.value];
+		storageValue.between15and59 = [selectHallway1560Plain.value, selectHallway1560Superior.value];
+		storageValue.between60and100 = [selectHallway60Plain.value, selectHallway60Superior.value, selectHallway60Epic.value];
+		storageValue.chooseOtherDoors = (document.getElementById('chooseOtherDoors').value == 'true');
+		storageValue.typeOtherDoors = document.getElementById('typeOtherDoors').value;
+		storageValue.securityDisarm = (document.getElementById('selectLabyrinthDisarm').value == 'true');
+		storageValue.lastHunt = parseInt(document.getElementById('inputLabyrinthLastHunt').value);
+		storageValue.armOtherBase = selectLabyrinthOtherBase.value;
+		storageValue.weaponFarming = selectLabyrinthWeaponType.value;
+		window.sessionStorage.setItem('Labyrinth_HallwayPriorities', JSON.stringify(storageValue));
+	}
+	
+	function loadDistricFocus(){
+		var storageValue = window.sessionStorage.getItem('Labyrinth_DistrictFocus');
+		if(storageValue === null)
+			storageValue = 'None';
+		
+		document.getElementById('labyrinthDistrict').value = storageValue;
+	}
+	
+	function loadLabyrinthHallway(){
+		var selectedDistrict = document.getElementById('labyrinthDistrict').value;
+		var inputLabyrinthLastHunt = document.getElementById('inputLabyrinthLastHunt');
+		var selectLabyrinthDisarm = document.getElementById('selectLabyrinthDisarm');
+		document.getElementById('trPriorities15').style.display = (selectedDistrict == 'None') ? 'none' : 'table-row';
+		document.getElementById('trPriorities1560').style.display = (selectedDistrict == 'None') ? 'none' : 'table-row';
+		document.getElementById('trPriorities60').style.display = (selectedDistrict == 'None') ? 'none' : 'table-row';
+		document.getElementById('labyrinthOtherHallway').style.display = (selectedDistrict == 'None') ? 'none' : 'table-row';
+		var selectHallway15Plain = document.getElementById('selectHallway15Plain');
+		var selectHallway1560Plain = document.getElementById('selectHallway1560Plain');
+		var selectHallway1560Superior = document.getElementById('selectHallway1560Superior');
+		var selectHallway60Plain = document.getElementById('selectHallway60Plain');
+		var selectHallway60Superior = document.getElementById('selectHallway60Superior');
+		var selectHallway60Epic = document.getElementById('selectHallway60Epic');
+		var selectChooseOtherDoors = document.getElementById('chooseOtherDoors');
+		var typeOtherDoors = document.getElementById('typeOtherDoors');
+		var selectLabyrinthOtherBase = document.getElementById('selectLabyrinthOtherBase');
+		var selectLabyrinthWeaponType = document.getElementById('selectLabyrinthWeaponType');
+		var storageValue = JSON.parse(window.sessionStorage.getItem('Labyrinth_HallwayPriorities'));
+		var objDefaultHallwayPriorities = {
+			between0and14 : ['LP'],
+			between15and59  : ['SP','LS'],
+			between60and100  : ['SP','SS','LE'],
+			chooseOtherDoors : false,
+			typeOtherDoors : "SHORTEST_ONLY",
+			securityDisarm : false,
+			lastHunt : 0,
+			armOtherBase : 'None',
+			weaponFarming : 'Forgotten'
+		};
+		if(storageValue === null){
+			storageValue = JSON.stringify(objDefaultHallwayPriorities);
+			storageValue = JSON.parse(storageValue);
+		}
+		
+		inputLabyrinthLastHunt.value = storageValue.lastHunt;
+		inputLabyrinthLastHunt.disabled = (storageValue.securityDisarm) ? '' : 'disabled';
+		selectLabyrinthDisarm.value = storageValue.securityDisarm.toString();
+		if(selectedDistrict == 'None')
+			return;
+		
+		selectHallway15Plain.value = storageValue.between0and14[0];
+		selectHallway1560Plain.value = storageValue.between15and59[0];
+		selectHallway1560Superior.value = storageValue.between15and59[1];
+		selectHallway60Plain.value = storageValue.between60and100[0];
+		selectHallway60Superior.value = storageValue.between60and100[1];
+		selectHallway60Epic.value = storageValue.between60and100[2];
+
+		selectHallway60Epic.style = (selectedDistrict == 'TREASURY' || selectedDistrict == 'FARMING') ? 'display:none' : 'display:inline';
+		selectChooseOtherDoors.value = storageValue.chooseOtherDoors.toString();
+		typeOtherDoors.value = storageValue.typeOtherDoors;
+		document.getElementById('typeOtherDoors').disabled = (storageValue.chooseOtherDoors)? '' : 'disabled';
+		selectLabyrinthOtherBase.value = storageValue.armOtherBase;
+		selectLabyrinthWeaponType.value = storageValue.weaponFarming;
+	}
+
+	function onSelectLGTGAutoPourSide(){
+		initControlsLG();
+	}
+	
+	function onSelectLGTGAutoPourState(){
+		saveLG();
+	}
+
+	function onSelectLGTGAutoFillSide(){
+		initControlsLG();
+	}
+	
+	function onSelectLGTGAutoFillState(){
+		saveLG();
+	}
+	
+	function onSelectLGTGSide(){
+		initControlsLG();
+	}
+	
+	function onSelectLGTGBase(){
+		saveLG();
+	}
+	
+	function onSelectLGTGTrinket(){
+		saveLG();
+	}
+	
+	function onSelectLGTGBait(){
+		saveLG();
+	}
+	
+	function onSelectLCCCSide(){
+		initControlsLG();
+	}
+	
+	function onSelectLCCCBase(){
+		saveLG();
+	}
+	
+	function onSelectLCCCTrinket(){
+		saveLG();
+	}
+	
+	function onSelectSaltedStatus(){
+		initControlsLG();
+	}
+	
+	function onSelectSCBase(){
+		saveLG();
+	}
+	
+	function onInputKGSaltChanged(){
+		saveLG();
+	}
+	
+	function saveLG(){
+		var selectLGTGAutoFillSide = document.getElementById('selectLGTGAutoFillSide');
+		var selectLGTGAutoFillState = document.getElementById('selectLGTGAutoFillState');
+		var selectLGTGAutoPourSide = document.getElementById('selectLGTGAutoPourSide');
+		var selectLGTGAutoPourState = document.getElementById('selectLGTGAutoPourState');
+		var selectLGTGSide = document.getElementById('selectLGTGSide');
+		var selectLGTGBase = document.getElementById('selectLGTGBase');
+		var selectLGTGTrinket = document.getElementById('selectLGTGTrinket');
+		var selectLGTGBait = document.getElementById('selectLGTGBait');
+		var selectLCCCSide = document.getElementById('selectLCCCSide');
+		var selectLCCCBase = document.getElementById('selectLCCCBase');
+		var selectLCCCTrinket = document.getElementById('selectLCCCTrinket');
+		var selectSaltedStatus = document.getElementById('selectSaltedStatus');
+		var selectSCBase = document.getElementById('selectSCBase');
+		var inputKGSalt = document.getElementById('inputKGSalt');
+		var storageValue = window.sessionStorage.getItem('LGArea');
+		if(storageValue === null || storageValue === undefined){
+			var objLGTemplate = {
+				isAutoFill : false,
+				isAutoPour : false,
+				maxSaltCharged : 25,
+				base : {
+					before : undefined,
+					after : undefined
+				},
+				trinket : {
+					before : undefined,
+					after : undefined
+				},
+				bait : {
+					before : undefined,
+					after : undefined
+				}
+			};
+			var objAllLG = {
+				LG : JSON.parse(JSON.stringify(objLGTemplate)),
+				TG : JSON.parse(JSON.stringify(objLGTemplate)),
+				LC : JSON.parse(JSON.stringify(objLGTemplate)),
+				CC : JSON.parse(JSON.stringify(objLGTemplate)),
+				SD : JSON.parse(JSON.stringify(objLGTemplate)),
+				SC : JSON.parse(JSON.stringify(objLGTemplate)),
+			};
+			storageValue = JSON.stringify(objAllLG);
+		}
+		storageValue = JSON.parse(storageValue);
+		storageValue[selectLGTGAutoFillSide.value].isAutoFill = (selectLGTGAutoFillState.value == 'true');
+		storageValue[selectLGTGAutoPourSide.value].isAutoPour = (selectLGTGAutoPourState.value == 'true');
+		storageValue[selectLGTGSide.value].base.after = selectLGTGBase.value;
+		storageValue[selectLGTGSide.value].base.after = selectLGTGBase.value;
+		storageValue[selectLGTGSide.value].trinket.after = selectLGTGTrinket.value;
+		storageValue[selectLGTGSide.value].bait.after = selectLGTGBait.value;
+		storageValue[selectLCCCSide.value].base.after = selectLCCCBase.value;
+		storageValue[selectLCCCSide.value].trinket.after = selectLCCCTrinket.value;
+		storageValue.SC.base[selectSaltedStatus.value] = selectSCBase.value;
+		storageValue.SC.maxSaltCharged = inputKGSalt.value;
+		window.sessionStorage.setItem('LGArea', JSON.stringify(storageValue));
+	}
+	
+	function initControlsLG(){
+		var selectLGTGAutoFillSide = document.getElementById('selectLGTGAutoFillSide');
+		var selectLGTGAutoFillState = document.getElementById('selectLGTGAutoFillState');
+		var selectLGTGAutoPourSide = document.getElementById('selectLGTGAutoPourSide');
+		var selectLGTGAutoPourState = document.getElementById('selectLGTGAutoPourState');
+		var selectLGTGSide = document.getElementById('selectLGTGSide');
+		var selectLGTGBase = document.getElementById('selectLGTGBase');
+		var selectLGTGTrinket = document.getElementById('selectLGTGTrinket');
+		var selectLGTGBait = document.getElementById('selectLGTGBait');
+		var selectLCCCSide = document.getElementById('selectLCCCSide');
+		var selectLCCCBase = document.getElementById('selectLCCCBase');
+		var selectLCCCTrinket = document.getElementById('selectLCCCTrinket');
+		var selectSaltedStatus = document.getElementById('selectSaltedStatus');
+		var selectSCBase = document.getElementById('selectSCBase');
+		var inputKGSalt = document.getElementById('inputKGSalt');
+		var storageValue = window.sessionStorage.getItem('LGArea');
+		if(storageValue === null || storageValue === undefined){
+			selectLGTGAutoFillState.selectedIndex = -1;
+			selectLGTGAutoPourState.selectedIndex = -1;
+			selectLGTGBase.selectedIndex = -1;
+			selectLGTGTrinket.selectedIndex = -1;
+			selectLGTGBait.selectedIndex = -1;
+			selectLCCCBase.selectedIndex = -1;
+			selectLCCCTrinket.selectedIndex = -1;
+			selectSCBase.selectedIndex = -1;
+			inputKGSalt.value = 25;
+		}
+		else{
+			storageValue = JSON.parse(storageValue);
+			selectLGTGAutoFillState.value = storageValue[selectLGTGAutoFillSide.value].isAutoFill;
+			selectLGTGAutoPourState.value = storageValue[selectLGTGAutoPourSide.value].isAutoPour;
+			selectLGTGBase.value = storageValue[selectLGTGSide.value].base.after;
+			selectLGTGTrinket.value = storageValue[selectLGTGSide.value].trinket.after;
+			selectLGTGBait.value = storageValue[selectLGTGSide.value].bait.after;
+			selectLCCCBase.value = storageValue[selectLCCCSide.value].base.after;
+			selectLCCCTrinket.value = storageValue[selectLCCCSide.value].trinket.after;
+			selectSCBase.value = storageValue.SC.base[selectSaltedStatus.value];
+			inputKGSalt.value = storageValue.SC.maxSaltCharged;
+		}
+	}
+	
+	function onSelectFWWaveChanged(){
+		// show wave X settings
+		var nWave = parseInt(document.getElementById('selectFWWave').value);
+		var option = document.getElementById('selectFWFocusType').children;
+		for(var i=0;i<option.length;i++){
+			if(option[i].innerText.indexOf('Special') > -1)
+				option[i].style = (nWave==1) ? 'display:none' : '';
+		}
+		initControlsFW();
+			
+	}
+	
+	function onSelectFWTrapSetupWeapon(){
+		saveFW();
+	}
+	
+	function onSelectFWTrapSetupBase(){
+		saveFW();
+	}
+	
+	function onSelectFW4WardenStatus(){
+		initControlsFW();
+	}
+	
+	function onSelectFW4TrapSetupWeapon(){
+		saveFW();
+	}
+	
+	function onSelectFW4TrapSetupBase(){
+		saveFW();
+	}
+	
+	function onSelectFW4TrapSetupTrinket(){
+		saveFW();
+	}
+	
+	function onSelectFW4TrapSetupBait(){
+		saveFW();
+	}
+
+	function onSelectFWStreakChanged(){
+		initControlsFW();
+	}
+	
+	function onSelectFWCheeseChanged(){
+		saveFW();
+	}
+	
+	function onSelectFWFocusTypeChanged(){
+		saveFW();
+	}
+	
+	function onSelectFWCharmTypeChanged(){
+		saveFW();
+	}
+	
+	function onSelectFWSpecialChanged(){
+		saveFW();
+	}
+	
+	function onSelectFWPrioritiesChanged(){
+		saveFW();
+	}
+	
+	function onSelectFWLastTypeConfigChanged(){
+		saveFW();
+	}
+	
+	function onSelectFWLastTypeConfigIncludeArtillery(){
+		saveFW();
+	}
+	
+	function onSelectFWSupportConfig(){
+		saveFW();
+	}
+	
+	function initControlsFW(bAutoChangeWave){
+		if(bAutoChangeWave === undefined || bAutoChangeWave === null)
+			bAutoChangeWave = false;
+		var selectFWWave = document.getElementById('selectFWWave');
+		var selectFWTrapSetupWeapon = document.getElementById('selectFWTrapSetupWeapon');
+		var selectFWTrapSetupBase = document.getElementById('selectFWTrapSetupBase');
+		var selectFWStreak = document.getElementById('selectFWStreak');
+		var selectFWFocusType = document.getElementById('selectFWFocusType');
+		var selectFWPriorities = document.getElementById('selectFWPriorities');
+		var selectFWCheese = document.getElementById('selectFWCheese');
+		var selectFWCharmType = document.getElementById('selectFWCharmType');
+		var selectFWSpecial = document.getElementById('selectFWSpecial');
+		var selectFWLastTypeConfig = document.getElementById('selectFWLastTypeConfig');
+		var selectFWLastTypeConfigIncludeArtillery = document.getElementById('selectFWLastTypeConfigIncludeArtillery');
+		var selectFWSupportConfig = document.getElementById('selectFWSupportConfig');
+		var selectFW4WardenStatus = document.getElementById('selectFW4WardenStatus');
+		var selectFW4TrapSetupWeapon = document.getElementById('selectFW4TrapSetupWeapon');
+		var selectFW4TrapSetupBase = document.getElementById('selectFW4TrapSetupBase');
+		var selectFW4TrapSetupTrinket = document.getElementById('selectFW4TrapSetupTrinket');
+		var selectFW4TrapSetupBait = document.getElementById('selectFW4TrapSetupBait');
+		var storageValue = window.sessionStorage.getItem('FW_Wave' + selectFWWave.value);
+		if(storageValue === null){
+			selectFWTrapSetupWeapon.selectedIndex = -1;
+			selectFWTrapSetupBase.selectedIndex = -1;
+			selectFW4TrapSetupWeapon.selectedIndex = -1;
+			selectFW4TrapSetupBase.selectedIndex = -1;
+			selectFW4TrapSetupTrinket.selectedIndex = -1;
+			selectFW4TrapSetupBait.selectedIndex = -1;
+			selectFWFocusType.selectedIndex = -1;
+			selectFWPriorities.selectedIndex = -1;
+			selectFWCheese.selectedIndex = -1;
+			selectFWCharmType.selectedIndex = -1;
+			selectFWSpecial.selectedIndex = -1;
+			selectFWLastTypeConfig.selectedIndex = -1;
+			selectFWLastTypeConfigIncludeArtillery.selectedIndex = 0;
+			selectFWSupportConfig.selectedIndex = 0;
+		}
+		else{
+			storageValue = JSON.parse(storageValue);
+			if(isNullOrUndefined(storageValue.weapon))
+				storageValue.weapon = 'Sandtail Sentinel';
+			if(isNullOrUndefined(storageValue.base))
+				storageValue.base = 'Physical Brace Base';
+			if(selectFWWave.value == 4){
+				selectFW4TrapSetupWeapon.value = storageValue.warden[selectFW4WardenStatus.value].weapon;
+				selectFW4TrapSetupBase.value = storageValue.warden[selectFW4WardenStatus.value].base;
+				selectFW4TrapSetupTrinket.value = storageValue.warden[selectFW4WardenStatus.value].trinket;
+				selectFW4TrapSetupBait.value = storageValue.warden[selectFW4WardenStatus.value].bait;
+			}
+			else{
+				selectFWTrapSetupWeapon.value = storageValue.weapon;
+				selectFWTrapSetupBase.value = storageValue.base;
+			}
+			selectFWFocusType.value = storageValue.focusType;
+			selectFWPriorities.value = storageValue.priorities;
+			selectFWCheese.value = storageValue.cheese[selectFWStreak.selectedIndex];
+			selectFWCharmType.value = storageValue.charmType[selectFWStreak.selectedIndex];
+			selectFWSpecial.value = storageValue.special[selectFWStreak.selectedIndex];
+			selectFWLastTypeConfig.value = storageValue.lastSoldierConfig;
+			selectFWLastTypeConfigIncludeArtillery.value = (storageValue.includeArtillery) ? 'true' : 'false';
+			selectFWSupportConfig.selectedIndex = (storageValue.disarmAfterSupportRetreat) ? 'true' : 'false';
+		}
+		var nWave = parseInt(selectFWWave.value);
+		var option = selectFWFocusType.children;
+		for(var i=0;i<option.length;i++){
+			if(option[i].innerText.indexOf('Special') > -1)
+				option[i].style = (nWave==1) ? 'display:none' : '';
+		}
+		if(selectFWWave.value == 4){
+			document.getElementById('trFWStreak').style.display = 'none';
+			document.getElementById('trFWFocusType').style.display = 'none';
+			document.getElementById('trFWLastType').style.display = 'none';
+			document.getElementById('trFWSupportConfig').style.display = 'none';
+			document.getElementById('trFWTrapSetup').style.display = 'none';
+			document.getElementById('trFW4TrapSetup').style.display = 'table-row';
+		}
+		else{
+			document.getElementById('trFWStreak').style.display = 'table-row';
+			document.getElementById('trFWFocusType').style.display = 'table-row';
+			document.getElementById('trFWLastType').style.display = 'table-row';
+			document.getElementById('trFWSupportConfig').style.display = 'table-row';
+			document.getElementById('trFWTrapSetup').style.display = 'table-row';
+			document.getElementById('trFW4TrapSetup').style.display = 'none';
+			if(selectFWWave.value == 3)
+				selectFWLastTypeConfigIncludeArtillery.disabled = '';
+			else
+				selectFWLastTypeConfigIncludeArtillery.disabled = 'disabled';
+		}
+		for(var i=0;i<selectFWSpecial.options.length;i++){
+			if(selectFWSpecial.options[i].value == 'GARGANTUA_GGC'){
+				if(selectFWStreak.selectedIndex >= 7)
+					selectFWSpecial.options[i].removeAttribute('disabled');
+				else
+					selectFWSpecial.options[i].setAttribute('disabled','disabled');
+				break;
+			}
+		}
+	}
+	
+	function saveFW(){
+		var selectFWWave = document.getElementById('selectFWWave');
+		var selectFWTrapSetupWeapon = document.getElementById('selectFWTrapSetupWeapon');
+		var selectFWTrapSetupBase = document.getElementById('selectFWTrapSetupBase');
+		var nWave = selectFWWave.value;
+		var selectFWStreak = document.getElementById('selectFWStreak');
+		var nStreak = parseInt(selectFWStreak.value);
+		var nStreakLength = selectFWStreak.children.length;
+		var selectFWFocusType = document.getElementById('selectFWFocusType');
+		var selectFWPriorities = document.getElementById('selectFWPriorities');
+		var selectFWCheese = document.getElementById('selectFWCheese');
+		var selectFWCharmType = document.getElementById('selectFWCharmType');
+		var selectFWSpecial = document.getElementById('selectFWSpecial');
+		var selectFWLastTypeConfig = document.getElementById('selectFWLastTypeConfig');
+		var selectFWLastTypeConfigIncludeArtillery = document.getElementById('selectFWLastTypeConfigIncludeArtillery');
+		var selectFWSupportConfig = document.getElementById('selectFWSupportConfig');
+		var selectFW4WardenStatus = document.getElementById('selectFW4WardenStatus');
+		var selectFW4TrapSetupWeapon = document.getElementById('selectFW4TrapSetupWeapon');
+		var selectFW4TrapSetupBase = document.getElementById('selectFW4TrapSetupBase');
+		var selectFW4TrapSetupTrinket = document.getElementById('selectFW4TrapSetupTrinket');
+		var selectFW4TrapSetupBait = document.getElementById('selectFW4TrapSetupBait');
+		var storageValue = window.sessionStorage.getItem('FW_Wave' + nWave);
+		if(storageValue === null){
+			var obj = {
+				weapon : '',
+				base : '',
+				focusType : 'NORMAL',
+				priorities : 'HIGHEST',
+				cheese : new Array(nStreakLength),
+				charmType : new Array(nStreakLength),
+				special : new Array(nStreakLength),
+				lastSoldierConfig : 'CONFIG_GOUDA',
+				includeArtillery : true,
+				disarmAfterSupportRetreat : false,
+				warden : {
+					before : {
+						weapon : '',
+						base : '',
+						trinket : '',
+						bait : ''
+					},
+					after : {
+						weapon : '',
+						base : '',
+						trinket : '',
+						bait : ''
+					}
+				}
+			};
+			storageValue = JSON.stringify(obj);
+		}
+		storageValue = JSON.parse(storageValue);
+		if(isNullOrUndefined(storageValue.weapon))
+			storageValue.weapon = 'Sandtail Sentinel';
+		if(isNullOrUndefined(storageValue.base))
+			storageValue.base = 'Physical Brace Base';
+		if(nWave == 4){
+			storageValue.warden[selectFW4WardenStatus.value].weapon = selectFW4TrapSetupWeapon.value;
+			storageValue.warden[selectFW4WardenStatus.value].base = selectFW4TrapSetupBase.value;
+			storageValue.warden[selectFW4WardenStatus.value].trinket = selectFW4TrapSetupTrinket.value;
+			storageValue.warden[selectFW4WardenStatus.value].bait = selectFW4TrapSetupBait.value;
+		}
+		else{
+			storageValue.weapon = selectFWTrapSetupWeapon.value;
+			storageValue.base = selectFWTrapSetupBase.value;
+		}
+		storageValue.focusType = selectFWFocusType.value;
+		storageValue.priorities = selectFWPriorities.value;
+		storageValue.cheese[nStreak] = selectFWCheese.value;
+		storageValue.charmType[nStreak] = selectFWCharmType.value;
+		storageValue.special[nStreak] = selectFWSpecial.value;
+		storageValue.lastSoldierConfig = selectFWLastTypeConfig.value;
+		storageValue.includeArtillery = (selectFWLastTypeConfigIncludeArtillery.value == 'true');
+		storageValue.disarmAfterSupportRetreat = (selectFWSupportConfig.value == 'true');
+		window.sessionStorage.setItem('FW_Wave' + nWave, JSON.stringify(storageValue));
+	}
+	
+	function onInputToggleCanisterChanged(){
+		saveBR();
+	}
+	
+	function onSelectBRHuntMistTierChanged(){
+		var hunt = document.getElementById('selectBRHuntMistTier').value;
+		var storageValue = window.sessionStorage.getItem('BRCustom');
+		if(storageValue === null){
+			var objBR = {
+				hunt : '',
+				toggle : 1,
+				name : ['Red', 'Green', 'Yellow', 'None'],
+				weapon : new Array(4),
+				base : new Array(4),
+				trinket : new Array(4),
+				bait : new Array(4)
+			};
+			storageValue = JSON.stringify(objBR);
+		}
+		storageValue = JSON.parse(storageValue);
+		storageValue.hunt = hunt;
+		window.sessionStorage.setItem('BRCustom', JSON.stringify(storageValue));
+		initControlsBR();
+	}
+	
+	function onSelectBRTrapWeaponChanged(){
+		saveBR();
+	}
+	
+	function onSelectBRTrapBaseChanged(){
+		saveBR();
+	}
+	
+	function onSelectBRTrapTrinketChanged(){
+		saveBR();
+	}
+	
+	function onSelectBRTrapBaitChanged(){
+		saveBR();
+	}
+	
+	function initControlsBR(){
+		var hunt = document.getElementById('selectBRHuntMistTier');
+		var toggle = document.getElementById('ToggleCanisterInput');
+		var weapon = document.getElementById('selectBRTrapWeapon');
+		var base = document.getElementById('selectBRTrapBase');
+		var trinket = document.getElementById('selectBRTrapTrinket');
+		var bait = document.getElementById('selectBRTrapBait');
+		var storageValue = window.sessionStorage.getItem('BRCustom');
+		if(storageValue === null){
+			toggle.value = 1;
+			hunt.selectedIndex = 0;
+			weapon.selectedIndex = -1;
+			base.selectedIndex = -1;
+			trinket.selectedIndex = -1;
+			bait.selectedIndex = -1;
+		}
+		else{
+			storageValue = JSON.parse(storageValue);
+			hunt.value = storageValue.hunt;
+			toggle.value = storageValue.toggle;
+			var nIndex = storageValue.name.indexOf(hunt.value);
+			weapon.value = storageValue.weapon[nIndex];
+			base.value = storageValue.base[nIndex];
+			trinket.value = storageValue.trinket[nIndex];
+			bait.value = storageValue.bait[nIndex];
+		}
+		document.getElementById('trBRToggle').style.display = (hunt.value == 'Red')? 'table-row' : 'none';
+	}
+	
+	function saveBR(){
+		var hunt = document.getElementById('selectBRHuntMistTier').value;
+		var nToggle = parseInt(document.getElementById('ToggleCanisterInput').value);
+		var weapon = document.getElementById('selectBRTrapWeapon').value;
+		var base = document.getElementById('selectBRTrapBase').value;
+		var trinket = document.getElementById('selectBRTrapTrinket').value;
+		var bait = document.getElementById('selectBRTrapBait').value;
+		var storageValue = window.sessionStorage.getItem('BRCustom');
+		if(storageValue === null){
+			var objBR = {
+				hunt : '',
+				toggle : 1,
+				name : ['Red', 'Green', 'Yellow', 'None'],
+				weapon : new Array(4),
+				base : new Array(4),
+				trinket : new Array(4),
+				bait : new Array(4)
+			};
+			storageValue = JSON.stringify(objBR);
+		}
+		storageValue = JSON.parse(storageValue);
+		var nIndex = storageValue.name.indexOf(hunt);
+		if(nIndex < 0)
+			nIndex = 0;
+		storageValue.hunt = hunt;
+		storageValue.toggle = nToggle;
+		storageValue.weapon[nIndex] = weapon;
+		storageValue.base[nIndex] = base;
+		storageValue.trinket[nIndex] = trinket;
+		storageValue.bait[nIndex] = bait;
+		window.sessionStorage.setItem('BRCustom', JSON.stringify(storageValue));
+	}
+	
+	function onSelectSGSeason(){
+		initControlsSG();
+	}
+	
+	function onSelectSGTrapWeapon(){
+		saveSGZT();
+	}
+	
+	function onSelectSGTrapBase(){
+		saveSGZT();
+	}
+	
+	function onSelectSGTrapTrinket(){
+		saveSGZT();
+	}
+	
+	function onSelectSGTrapBait(){
+		saveSGZT();
+	}
+	
+	function onSelectSGDisarmBait(){
+		saveSGZT();
+	}
+	
+	function saveSGZT(){
+		var selectSGSeason = document.getElementById('selectSGSeason');
+		var selectSGTrapWeapon = document.getElementById('selectSGTrapWeapon');
+		var selectSGTrapBase = document.getElementById('selectSGTrapBase');
+		var selectSGTrapTrinket = document.getElementById('selectSGTrapTrinket');
+		var selectSGTrapBait = document.getElementById('selectSGTrapBait');
+		var selectSGDisarmBait = document.getElementById('selectSGDisarmBait');
+		var storageValue = window.sessionStorage.getItem('SGZT');
+		if(isNullOrUndefined(storageValue)){
+			var objSGZT = {
+				weapon : new Array(4).fill(''),
+				base : new Array(4).fill(''),
+				trinket : new Array(4).fill(''),
+				bait : new Array(4).fill(''),
+				disarmBaitAfterCharged : false
+			};
+			storageValue = JSON.stringify(objSGZT);
+		}
+		storageValue = JSON.parse(storageValue);
+		var nIndex = (selectSGSeason.selectedIndex < 0) ? 0 : selectSGSeason.selectedIndex;
+		storageValue.weapon[nIndex] = selectSGTrapWeapon.value;
+		storageValue.base[nIndex] = selectSGTrapBase.value;
+		storageValue.trinket[nIndex] = selectSGTrapTrinket.value;
+		storageValue.bait[nIndex] = selectSGTrapBait.value;
+		storageValue.disarmBaitAfterCharged = (selectSGDisarmBait.value == 'true');
+		window.sessionStorage.setItem('SGZT', JSON.stringify(storageValue));
+	}
+	
+	function initControlsSG(bAutoChangeSeason){
+		if(isNullOrUndefined(bAutoChangeSeason))
+			bAutoChangeSeason = false;
+		var selectSGSeason = document.getElementById('selectSGSeason');
+		var selectSGTrapWeapon = document.getElementById('selectSGTrapWeapon');
+		var selectSGTrapBase = document.getElementById('selectSGTrapBase');
+		var selectSGTrapTrinket = document.getElementById('selectSGTrapTrinket');
+		var selectSGTrapBait = document.getElementById('selectSGTrapBait');
+		var selectSGDisarmBait = document.getElementById('selectSGDisarmBait');
+		var storageValue = window.sessionStorage.getItem('SGZT');
+		if(storageValue === null){
+			selectSGTrapWeapon.selectedIndex = -1;
+			selectSGTrapBase.selectedIndex = -1;
+			selectSGTrapTrinket.selectedIndex = -1;
+			selectSGTrapBait.selectedIndex = -1;
+			selectSGDisarmBait.selectedIndex = -1;
+		}
+		else{
+			storageValue = JSON.parse(storageValue);
+			if(bAutoChangeSeason /*&& user.location.indexOf('Seasonal Garden') > -1*/){
+				var arrSeason = ['Spring', 'Summer', 'Fall', 'Winter'];
+				var nTimeStamp = Date.parse(new Date())/1000;
+				var nFirstSeasonTimeStamp = 1283328000;
+				var nSeasonLength = 288000; // 80hr
+				var nSeason = Math.floor((nTimeStamp - nFirstSeasonTimeStamp)/nSeasonLength) % arrSeason.length;
+				selectSGSeason.value = arrSeason[nSeason].toUpperCase();
+			}
+			var nIndex = (selectSGSeason.selectedIndex < 0) ? 0 : selectSGSeason.selectedIndex;
+			selectSGTrapWeapon.value = storageValue.weapon[nIndex];
+			selectSGTrapBase.value = storageValue.base[nIndex];
+			selectSGTrapTrinket.value = storageValue.trinket[nIndex];
+			selectSGTrapBait.value = storageValue.bait[nIndex];
+			selectSGDisarmBait.value = (storageValue.disarmBaitAfterCharged) ? 'true' : 'false';
+		}
+	}
+	
+	function onSelectZTFocus(){
+		var selectZTFocus = document.getElementById('selectZTFocus');
+		var selectZTWeapon1st = document.getElementById('selectZTWeapon1st');
+		if(selectZTFocus.value == 'MYSTIC'){
+		
+		}
+		else if(selectZTFocus.value == 'TECHNIC'){
+		}
+		saveZT();
+	}
+	
+	function onSelectZTMouseOrder(){
+		initControlsZT();
+	}
+	
+	function onSelectZTWeapon(){
+		saveZT();
+	}
+	
+	function onSelectZTBase(){
+		saveZT();
+	}
+	
+	function onSelectZTTrinket(){
+		saveZT();
+	}
+	
+	function onSelectZTBait(){
+		saveZT();
+	}
+
+	function initControlsZT(){
+		var selectZTFocus = document.getElementById('selectZTFocus');
+		var selectZTMouseOrder1st = document.getElementById('selectZTMouseOrder1st');
+		var selectZTWeapon1st = document.getElementById('selectZTWeapon1st');
+		var selectZTBase1st = document.getElementById('selectZTBase1st');
+		var selectZTTrinket1st = document.getElementById('selectZTTrinket1st');
+		var selectZTBait1st = document.getElementById('selectZTBait1st');
+		var storageValue = window.sessionStorage.getItem('ZTower');
+		if(isNullOrUndefined(storageValue)){
+			selectZTWeapon1st.selectedIndex = -1;
+			selectZTBase1st.selectedIndex = -1;
+			selectZTTrinket1st.selectedIndex = -1;
+			selectZTBait1st.selectedIndex = -1;
+		}
+		else{
+			storageValue = JSON.parse(storageValue);
+			selectZTFocus.value = storageValue.focus;
+			var nIndex = storageValue.order.indexOf(selectZTMouseOrder1st.value);
+			if(nIndex < 0)
+				nIndex = 0;
+			selectZTWeapon1st.value = storageValue.weapon[nIndex];
+			selectZTBase1st.value = storageValue.base[nIndex];
+			selectZTTrinket1st.value = storageValue.trinket[nIndex];
+			selectZTBait1st.value = storageValue.bait[nIndex];
+		}
+	}
+	
+	function saveZT(){
+		var selectZTFocus = document.getElementById('selectZTFocus');
+		var selectZTMouseOrder1st = document.getElementById('selectZTMouseOrder1st');
+		var selectZTWeapon1st = document.getElementById('selectZTWeapon1st');
+		var selectZTBase1st = document.getElementById('selectZTBase1st');
+		var selectZTTrinket1st = document.getElementById('selectZTTrinket1st');
+		var selectZTBait1st = document.getElementById('selectZTBait1st');
+		var storageValue = window.sessionStorage.getItem('ZTower');
+		if(isNullOrUndefined(storageValue)){
+			var objZT = {
+				focus : 'Mystic',
+				order : ['PAWN', 'KNIGHT', 'BISHOP', 'ROOK', 'QUEEN', 'KING', 'CHESSMASTER'],
+				weapon : new Array(7).fill(''),
+				base : new Array(7).fill(''),
+				trinket : new Array(7).fill('None'),
+				bait : new Array(7).fill('Gouda'),
+			};
+			storageValue = JSON.stringify(objZT);
+		}
+		storageValue = JSON.parse(storageValue);
+		var nIndex = storageValue.order.indexOf(selectZTMouseOrder1st.value);
+		if(nIndex < 0)
+			nIndex = 0;
+		storageValue.focus = selectZTFocus.value;
+		storageValue.weapon[nIndex] = selectZTWeapon1st.value;
+		storageValue.base[nIndex] = selectZTBase1st.value;
+		storageValue.trinket[nIndex] = selectZTTrinket1st.value;
+		storageValue.bait[nIndex] = selectZTBait1st.value;
+		window.sessionStorage.setItem('ZTower', JSON.stringify(storageValue));
+	}
+	
+	function onSelectZokorBossStatus(){
+		initControlsZokor();
+	}
+	
+	function onSelectZokorBait(){
+		saveZokor();
+	}
+	
+	function onSelectZokorTrinket(){
+		saveZokor();
+	}
+	
+	function saveZokor(){
+		var selectZokorBossStatus = document.getElementById('selectZokorBossStatus');
+		var selectZokorBait = document.getElementById('selectZokorBait');
+		var selectZokorTrinket = document.getElementById('selectZokorTrinket');
+		var storageValue = window.sessionStorage.getItem('Zokor');
+		if(storageValue === null){
+			var objZokor = {
+				bossStatus : ['ACTIVE', 'INCOMING', 'DEFEATED'],
+				bait : new Array(3).fill('Gouda'),
+				charm : new Array(3).fill('None')
+			};
+			storageValue = JSON.stringify(objZokor);
+		}
+		storageValue = JSON.parse(storageValue);
+		var nIndex = storageValue.bossStatus.indexOf(selectZokorBossStatus.value);
+		if(nIndex < 0)
+			nIndex = 0;
+		storageValue.bait[nIndex] = selectZokorBait.value;
+		storageValue.charm[nIndex] = selectZokorTrinket.value;
+		window.sessionStorage.setItem('Zokor', JSON.stringify(storageValue));
+	}
+	
+	function initControlsZokor(){
+		var selectZokorBossStatus = document.getElementById('selectZokorBossStatus');
+		var selectZokorBait = document.getElementById('selectZokorBait');
+		var selectZokorTrinket = document.getElementById('selectZokorTrinket');
+		var storageValue = window.sessionStorage.getItem('Zokor');
+		if(storageValue === null || storageValue === undefined){
+			selectZokorBait.selectedIndex = -1;
+			selectZokorTrinket.selectedIndex = -1;
+		}
+		else{
+			storageValue = JSON.parse(storageValue);
+			var nIndex = storageValue.bossStatus.indexOf(selectZokorBossStatus.value);
+			if(nIndex < 0)
+				nIndex = 0;
+			selectZokorBait.value = storageValue.bait[nIndex];
+			selectZokorTrinket.value = storageValue.charm[nIndex];
+		}
+	}
+	
+	function onSelectIcebergPhase(){
+		initControlsIceberg();
+	}
+	
+	function onSelectIcebergBase(){
+		saveIceberg();
+	}
+	
+	function onSelectIcebergBait(){
+		saveIceberg();
+	}
+	
+	function onSelectIcebergTrinket(){
+		saveIceberg();
+	}
+	
+	function saveIceberg(){
+		var selectIcebergPhase = document.getElementById('selectIcebergPhase');
+		var selectIcebergBase = document.getElementById('selectIcebergBase');
+		var selectIcebergBait = document.getElementById('selectIcebergBait');
+		var selectIcebergTrinket = document.getElementById('selectIcebergTrinket');
+		var storageValue = window.sessionStorage.getItem('Iceberg');
+		if(storageValue === null || storageValue === undefined){
+			var objDefaultIceberg = {
+				order : ['GENERAL', 'TREACHEROUS', 'BRUTAL', 'BOMBING', 'MAD', 'ICEWING', 'HIDDEN', 'DEEP', 'SLUSHY'],
+				base : new Array(9).fill(''),
+				trinket : new Array(9).fill('None'),
+				bait : new Array(9).fill('Gouda')
+			};
+			storageValue = JSON.stringify(objDefaultIceberg);
+		}
+		storageValue = JSON.parse(storageValue);
+		var nIndex = storageValue.order.indexOf(selectIcebergPhase.value);
+		if(nIndex < 0)
+			nIndex = 0;
+		storageValue.base[nIndex] = selectIcebergBase.value;
+		storageValue.bait[nIndex] = selectIcebergBait.value;
+		storageValue.trinket[nIndex] = selectIcebergTrinket.value;
+		window.sessionStorage.setItem('Iceberg', JSON.stringify(storageValue));
+	}
+	
+	function initControlsIceberg(){
+		var selectIcebergPhase = document.getElementById('selectIcebergPhase');
+		var selectIcebergBase = document.getElementById('selectIcebergBase');
+		var selectIcebergBait = document.getElementById('selectIcebergBait');
+		var selectIcebergTrinket = document.getElementById('selectIcebergTrinket');
+		var storageValue = window.sessionStorage.getItem('Iceberg');
+		if(storageValue === null || storageValue === undefined){
+			selectIcebergBase.selectedIndex = -1;
+			selectIcebergBait.selectedIndex = -1;
+			selectIcebergTrinket.selectedIndex = -1;
+		}
+		else{
+			storageValue = JSON.parse(storageValue);
+			var nIndex = storageValue.order.indexOf(selectIcebergPhase.value);
+			if(nIndex < 0)
+				nIndex = 0;
+			selectIcebergBase.value = storageValue.base[nIndex];
+			selectIcebergTrinket.value = storageValue.trinket[nIndex];
+			selectIcebergBait.value = storageValue.bait[nIndex];
+		}
+	}
+
+	function saveFGAR(){
+		var selectFGARSublocation = document.getElementById('selectFGARSublocation');
+		var selectFGARWeapon = document.getElementById('selectFGARWeapon');
+		var selectFGARBase = document.getElementById('selectFGARBase');
+		var selectFGARTrinket = document.getElementById('selectFGARTrinket');
+		var selectFGARBait = document.getElementById('selectFGARBait');
+		var storageValue = window.sessionStorage.getItem('FG_AR');
+		if(isNullOrUndefined(storageValue))
+			storageValue = JSON.stringify(objDefaultFGAR);
+		storageValue = JSON.parse(storageValue);
+		var nIndex = storageValue.order.indexOf(selectFGARSublocation.value);
+		storageValue.weapon[nIndex] = selectFGARWeapon.value;
+		storageValue.base[nIndex] = selectFGARBase.value;
+		storageValue.trinket[nIndex] = selectFGARTrinket.value;
+		storageValue.bait[nIndex] = selectFGARBait.value;
+		window.sessionStorage.setItem('FG_AR', JSON.stringify(storageValue));
+	}
+	
+	function initControlsFGAR(bAutoChangeSublocation){
+		if(isNullOrUndefined(bAutoChangeSublocation))
+			bAutoChangeSublocation = false;
+		var selectFGARSublocation = document.getElementById('selectFGARSublocation');
+		var selectFGARWeapon = document.getElementById('selectFGARWeapon');
+		var selectFGARBase = document.getElementById('selectFGARBase');
+		var selectFGARTrinket = document.getElementById('selectFGARTrinket');
+		var selectFGARBait = document.getElementById('selectFGARBait');
+		var storageValue = window.sessionStorage.getItem('FG_AR');
+		if(isNullOrUndefined(storageValue))
+			storageValue = JSON.stringify(objDefaultFGAR);
+		storageValue = JSON.parse(storageValue);
+		var nIndex = storageValue.order.indexOf(selectFGARSublocation.value);
+		selectFGARWeapon.value = storageValue.weapon[nIndex];
+		selectFGARBase.value = storageValue.base[nIndex];
+		selectFGARTrinket.value = storageValue.trinket[nIndex];
+		selectFGARBait.value = storageValue.bait[nIndex];
+	}
+	
+	function saveBCJOD(){
+		var selectBCJODSublocation = document.getElementById('selectBCJODSublocation');
+		var selectBCJODWeapon = document.getElementById('selectBCJODWeapon');
+		var selectBCJODBase = document.getElementById('selectBCJODBase');
+		var selectBCJODTrinket = document.getElementById('selectBCJODTrinket');
+		var selectBCJODBait = document.getElementById('selectBCJODBait');
+		var storageValue = window.sessionStorage.getItem('BC_JOD');
+		if(isNullOrUndefined(storageValue))
+			storageValue = JSON.stringify(objDefaultBCJOD);
+		storageValue = JSON.parse(storageValue);
+		var nIndex = storageValue.order.indexOf(selectBCJODSublocation.value);
+		storageValue.weapon[nIndex] = selectBCJODWeapon.value;
+		storageValue.base[nIndex] = selectBCJODBase.value;
+		storageValue.trinket[nIndex] = selectBCJODTrinket.value;
+		storageValue.bait[nIndex] = selectBCJODBait.value;
+		window.sessionStorage.setItem('BC_JOD', JSON.stringify(storageValue));
+	}
+	
+	function initControlsBCJOD(bAutoChangeSublocation){
+		if(isNullOrUndefined(bAutoChangeSublocation))
+			bAutoChangeSublocation = false;
+		var selectBCJODSublocation = document.getElementById('selectBCJODSublocation');
+		var selectBCJODWeapon = document.getElementById('selectBCJODWeapon');
+		var selectBCJODBase = document.getElementById('selectBCJODBase');
+		var selectBCJODTrinket = document.getElementById('selectBCJODTrinket');
+		var selectBCJODBait = document.getElementById('selectBCJODBait');
+		var storageValue = window.sessionStorage.getItem('BC_JOD');
+		if(isNullOrUndefined(storageValue))
+			storageValue = JSON.stringify(objDefaultBCJOD);
+		storageValue = JSON.parse(storageValue);
+		var nIndex = storageValue.order.indexOf(selectBCJODSublocation.value);
+		selectBCJODWeapon.value = storageValue.weapon[nIndex];
+		selectBCJODBase.value = storageValue.base[nIndex];
+		selectBCJODTrinket.value = storageValue.trinket[nIndex];
+		selectBCJODBait.value = storageValue.bait[nIndex];
+	}
+	
+	function onSelectBWRiftForceActiveQuantum(){
+		saveBWRift();
+		initControlsBWRift();
+	}
+	
+	function onSelectBWRiftForceDeactiveQuantum(){
+		saveBWRift();
+		initControlsBWRift();
+	}
+	
+	function onInputRemaininigLootAChanged(input){
+		input.value = limitMinMax(input.value, input.min, input.max);
+		saveBWRift();
+	}
+	
+	function onInputRemaininigLootDChanged(input){
+		input.value = limitMinMax(input.value, input.min, input.max);
+		saveBWRift();
+	}
+	
+	function onSelectBWRiftChoosePortal(){
+		saveBWRift();
+		initControlsBWRift();
+	}
+	
+	function onInputMinTimeSandChanged(input){
+		input.value = limitMinMax(input.value, input.min, input.max);
+		saveBWRift();
+	}
+	
+	function onSelectBWRiftMinRSCType(){
+		saveBWRift();
+		initControlsBWRift();
+	}
+	
+	function onInputMinRSCChanged(input){
+		input.value = limitMinMax(input.value, input.min, input.max);
+		saveBWRift();
+	}
+	
+	function saveBWRift(){
+		var selectBWRiftChamber = document.getElementById('selectBWRiftChamber');
+		var selectBWRiftWeapon = document.getElementById('selectBWRiftWeapon');
+		var selectBWRiftBase = document.getElementById('selectBWRiftBase');
+		var selectBWRiftBait = document.getElementById('selectBWRiftBait');
+		var selectBWRiftTrinket = document.getElementById('selectBWRiftTrinket');
+		var selectBWRiftActivatePocketWatch = document.getElementById('selectBWRiftActivatePocketWatch');
+		var selectBWRiftCleaverStatus = document.getElementById('selectBWRiftCleaverStatus');
+		var selectBWRiftAlertLvl = document.getElementById('selectBWRiftAlertLvl');
+		var selectBWRiftWeaponSpecial = document.getElementById('selectBWRiftWeaponSpecial');
+		var selectBWRiftBaseSpecial = document.getElementById('selectBWRiftBaseSpecial');
+		var selectBWRiftBaitSpecial = document.getElementById('selectBWRiftBaitSpecial');
+		var selectBWRiftTrinketSpecial = document.getElementById('selectBWRiftTrinketSpecial');
+		var selectBWRiftActivatePocketWatchSpecial = document.getElementById('selectBWRiftActivatePocketWatchSpecial');
+		var selectBWRiftForceActiveQuantum = document.getElementById('selectBWRiftForceActiveQuantum');
+		var inputRemainingLootA = document.getElementById('inputRemainingLootA');
+		var selectBWRiftForceDeactiveQuantum = document.getElementById('selectBWRiftForceDeactiveQuantum');
+		var inputRemainingLootD = document.getElementById('inputRemainingLootD');
+		var selectBWRiftChoosePortal = document.getElementById('selectBWRiftChoosePortal');
+		var selectBWRiftChoosePortalAfterCC = document.getElementById('selectBWRiftChoosePortalAfterCC');
+		var selectBWRiftPriority = document.getElementById('selectBWRiftPriority');
+		var selectBWRiftPriorityCursed = document.getElementById('selectBWRiftPriorityCursed');
+		var selectBWRiftPortal = document.getElementById('selectBWRiftPortal');
+		var selectBWRiftBuffCurse = document.getElementById('selectBWRiftBuffCurse');
+		var inputMinTimeSand = document.getElementById('inputMinTimeSand');
+		var selectBWRiftMinRSCType = document.getElementById('selectBWRiftMinRSCType');
+		var inputMinRSC = document.getElementById('inputMinRSC');
+		var selectBWRiftEnterWCurse = document.getElementById('selectBWRiftEnterWCurse');
+		var storageValue = window.sessionStorage.getItem('BWRift');
+		if(isNullOrUndefined(storageValue))
+			storageValue = JSON.stringify(objDefaultBWRift);
+		storageValue = JSON.parse(storageValue);
+		var nIndexCursed = selectBWRiftChamber.value.indexOf('_CURSED');
+		var bCursed = (nIndexCursed > -1);
+		var strChamberName = (bCursed) ? selectBWRiftChamber.value.substr(0,nIndexCursed) : selectBWRiftChamber.value;
+		var nIndex = storageValue.order.indexOf(strChamberName);
+		if(nIndex < 0)
+			nIndex = 0;
+		if(bCursed)
+			nIndex += 16;
+		storageValue.master.weapon[nIndex] = selectBWRiftWeapon.value;
+		storageValue.master.base[nIndex] = selectBWRiftBase.value;
+		storageValue.master.bait[nIndex] = selectBWRiftBait.value;
+		storageValue.master.trinket[nIndex] = selectBWRiftTrinket.value;
+		storageValue.master.activate[nIndex] = (selectBWRiftActivatePocketWatch.value == 'true');
+		storageValue.specialActivate.forceActivate[nIndex] = (selectBWRiftForceActiveQuantum.value == 'true');
+		storageValue.specialActivate.remainingLootActivate[nIndex] = parseInt(inputRemainingLootA.value);
+		storageValue.specialActivate.forceDeactivate[nIndex] = (selectBWRiftForceDeactiveQuantum.value == 'true');
+		storageValue.specialActivate.remainingLootDeactivate[nIndex] = parseInt(inputRemainingLootD.value);
+		var strTemp = '';
+		if(strChamberName == 'GEARWORKS' || strChamberName == 'ANCIENT' || strChamberName == 'RUNIC'){
+			nIndex = selectBWRiftCleaverStatus.selectedIndex;
+			if(bCursed)
+				nIndex += 2;
+			if(strChamberName == 'GEARWORKS')
+				strTemp = 'gw';
+			else if(strChamberName == 'ANCIENT')
+				strTemp = 'al';
+			else
+				strTemp = 'rl';
+		}
+		else if(strChamberName == 'GUARD'){
+			nIndex = selectBWRiftAlertLvl.selectedIndex;
+			if(bCursed)
+				nIndex += 7;
+			strTemp = 'gb';
+		}
+		/*else if(strChamberName == 'INGRESS'){
+			nIndex = selectBWRiftFTC.selectedIndex;
+			if(bCursed)
+				nIndex += 4;
+			strTemp = 'ic';
+		}
+		else if(strChamberName == 'FROZEN'){
+			nIndex = selectBWRiftHunt.selectedIndex;
+			if(bCursed)
+				nIndex += 16;
+			strTemp = 'fa';
+		}*/
+		else
+			strTemp = 'master';
+		if(strTemp !== 'master'){
+			storageValue[strTemp].weapon[nIndex] = selectBWRiftWeaponSpecial.value;
+			storageValue[strTemp].base[nIndex] = selectBWRiftBaseSpecial.value;
+			storageValue[strTemp].bait[nIndex] = selectBWRiftBaitSpecial.value;
+			storageValue[strTemp].trinket[nIndex] = selectBWRiftTrinketSpecial.value;
+			if(selectBWRiftActivatePocketWatchSpecial.value == 'MASTER')
+				storageValue[strTemp].activate[nIndex] = selectBWRiftActivatePocketWatchSpecial.value;
+			else
+				storageValue[strTemp].activate[nIndex] = (selectBWRiftActivatePocketWatchSpecial.value == 'true');
+		}
+		storageValue.minRSCType = selectBWRiftMinRSCType.value;
+		storageValue.minRSC = parseInt(inputMinRSC.value);
+		storageValue.choosePortal = (selectBWRiftChoosePortal.value == 'true');
+		if(storageValue.choosePortal){
+			storageValue.choosePortalAfterCC = (selectBWRiftChoosePortalAfterCC.value == 'true');
+			storageValue.priorities[selectBWRiftPriority.selectedIndex] = selectBWRiftPortal.value;
+			storageValue.prioritiesCursed[selectBWRiftPriorityCursed.selectedIndex] = selectBWRiftPortalCursed.value;
+			nIndex = parseInt(selectBWRiftBuffCurse.value);
+			storageValue.minTimeSand[nIndex] = parseInt(inputMinTimeSand.value);
+			storageValue.enterMinigameWCurse = (selectBWRiftEnterWCurse.value == 'true');
+		}
+		window.sessionStorage.setItem('BWRift', JSON.stringify(storageValue));
+	}
+	
+	function initControlsBWRift(){
+		var selectBWRiftChamber = document.getElementById('selectBWRiftChamber');
+		var selectBWRiftWeapon = document.getElementById('selectBWRiftWeapon');
+		var selectBWRiftBase = document.getElementById('selectBWRiftBase');
+		var selectBWRiftBait = document.getElementById('selectBWRiftBait');
+		var selectBWRiftTrinket = document.getElementById('selectBWRiftTrinket');
+		var selectBWRiftActivatePocketWatch = document.getElementById('selectBWRiftActivatePocketWatch');
+		var selectBWRiftCleaverStatus = document.getElementById('selectBWRiftCleaverStatus');
+		var selectBWRiftAlertLvl = document.getElementById('selectBWRiftAlertLvl');
+		var selectBWRiftWeaponSpecial = document.getElementById('selectBWRiftWeaponSpecial');
+		var selectBWRiftBaseSpecial = document.getElementById('selectBWRiftBaseSpecial');
+		var selectBWRiftBaitSpecial = document.getElementById('selectBWRiftBaitSpecial');
+		var selectBWRiftTrinketSpecial = document.getElementById('selectBWRiftTrinketSpecial');
+		var selectBWRiftActivatePocketWatchSpecial = document.getElementById('selectBWRiftActivatePocketWatchSpecial');
+		var selectBWRiftForceActiveQuantum = document.getElementById('selectBWRiftForceActiveQuantum');
+		var inputRemainingLootA = document.getElementById('inputRemainingLootA');
+		var selectBWRiftForceDeactiveQuantum = document.getElementById('selectBWRiftForceDeactiveQuantum');
+		var inputRemainingLootD = document.getElementById('inputRemainingLootD');
+		var selectBWRiftChoosePortal = document.getElementById('selectBWRiftChoosePortal');
+		var selectBWRiftChoosePortalAfterCC = document.getElementById('selectBWRiftChoosePortalAfterCC');
+		var selectBWRiftPriority = document.getElementById('selectBWRiftPriority');
+		var selectBWRiftPriorityCursed = document.getElementById('selectBWRiftPriorityCursed');
+		var selectBWRiftPortal = document.getElementById('selectBWRiftPortal');
+		var selectBWRiftBuffCurse = document.getElementById('selectBWRiftBuffCurse');
+		var inputMinTimeSand = document.getElementById('inputMinTimeSand');
+		var selectBWRiftMinRSCType = document.getElementById('selectBWRiftMinRSCType');
+		var inputMinRSC = document.getElementById('inputMinRSC');
+		var selectBWRiftEnterWCurse = document.getElementById('selectBWRiftEnterWCurse');
+		var storageValue = window.sessionStorage.getItem('BWRift');
+		if(isNullOrUndefined(storageValue))
+			storageValue = JSON.stringify(objDefaultBWRift);
+		storageValue = JSON.parse(storageValue);
+		var nIndexCursed = selectBWRiftChamber.value.indexOf('_CURSED');
+		var bCursed = (nIndexCursed > -1);
+		var strChamberName = (bCursed) ? selectBWRiftChamber.value.substr(0,nIndexCursed) : selectBWRiftChamber.value;
+		var nIndex = storageValue.order.indexOf(strChamberName);
+		if(nIndex < 0)
+			nIndex = 0;
+		if(bCursed)
+			nIndex += 16;
+		selectBWRiftWeapon.value = storageValue.master.weapon[nIndex];
+		selectBWRiftBase.value = storageValue.master.base[nIndex];
+		selectBWRiftTrinket.value = storageValue.master.trinket[nIndex];
+		selectBWRiftBait.value = storageValue.master.bait[nIndex];
+		selectBWRiftActivatePocketWatch.value = (storageValue.master.activate[nIndex] === true) ? 'true' : 'false';
+		selectBWRiftForceActiveQuantum.value = (storageValue.specialActivate.forceActivate[nIndex] === true) ? 'true' : 'false';
+		inputRemainingLootA.value = storageValue.specialActivate.remainingLootActivate[nIndex];
+		inputRemainingLootA.disabled = (selectBWRiftForceActiveQuantum.value == 'true') ? '' : 'disabled';
+		selectBWRiftForceDeactiveQuantum.value = (storageValue.specialActivate.forceDeactivate[nIndex] === true) ? 'true' : 'false';
+		inputRemainingLootD.value = storageValue.specialActivate.remainingLootDeactivate[nIndex];
+		inputRemainingLootD.disabled = (selectBWRiftForceDeactiveQuantum.value == 'true') ? '' : 'disabled';
+		var strTemp = '';
+		if(strChamberName == 'GEARWORKS' || strChamberName == 'ANCIENT' || strChamberName == 'RUNIC'){
+			nIndex = selectBWRiftCleaverStatus.selectedIndex;
+			if(bCursed)
+				nIndex += 2;
+			if(strChamberName == 'GEARWORKS')
+				strTemp = 'gw';
+			else if(strChamberName == 'ANCIENT')
+				strTemp = 'al';
+			else
+				strTemp = 'rl';
+			selectBWRiftCleaverStatus.style.display = '';
+			selectBWRiftAlertLvl.style.display = 'none';
+			selectBWRiftFTC.style.display = 'none';
+			selectBWRiftHunt.style.display = 'none';
+		}
+		else if(strChamberName == 'GUARD'){
+			nIndex = selectBWRiftAlertLvl.selectedIndex;
+			if(bCursed)
+				nIndex += 7;
+			strTemp = 'gb';
+			selectBWRiftCleaverStatus.style.display = 'none';
+			selectBWRiftAlertLvl.style.display = '';
+			selectBWRiftFTC.style.display = 'none';
+			selectBWRiftHunt.style.display = 'none';
+		}
+		/*else if(strChamberName == 'INGRESS'){
+			nIndex = selectBWRiftFTC.selectedIndex;
+			if(bCursed)
+				nIndex += 4;
+			strTemp = 'ic';
+			selectBWRiftCleaverStatus.style.display = 'none';
+			selectBWRiftAlertLvl.style.display = 'none';
+			selectBWRiftFTC.style.display = '';
+			selectBWRiftHunt.style.display = 'none';
+		}
+		else if(strChamberName == 'FROZEN'){
+			nIndex = selectBWRiftHunt.selectedIndex;
+			if(bCursed)
+				nIndex += 16;
+			strTemp = 'fa';
+			selectBWRiftCleaverStatus.style.display = 'none';
+			selectBWRiftAlertLvl.style.display = 'none';
+			selectBWRiftFTC.style.display = 'none';
+			selectBWRiftHunt.style.display = '';
+		}*/
+		else{
+			strTemp = 'master';
+			selectBWRiftCleaverStatus.style.display = 'none';
+			selectBWRiftAlertLvl.style.display = 'none';
+			selectBWRiftFTC.style.display = 'none';
+			selectBWRiftHunt.style.display = 'none';
+		}
+		if(strTemp == 'master')
+			document.getElementById('trBWRiftTrapSetupSpecial').style.display = 'none';
+		else{
+			selectBWRiftWeaponSpecial.value = storageValue[strTemp].weapon[nIndex];
+			selectBWRiftBaseSpecial.value = storageValue[strTemp].base[nIndex];
+			selectBWRiftTrinketSpecial.value = storageValue[strTemp].trinket[nIndex];
+			selectBWRiftBaitSpecial.value = storageValue[strTemp].bait[nIndex];
+			if(storageValue[strTemp].activate[nIndex] == 'MASTER')
+				selectBWRiftActivatePocketWatchSpecial.value = storageValue[strTemp].activate[nIndex];
+			else
+				selectBWRiftActivatePocketWatchSpecial.value = (storageValue[strTemp].activate[nIndex] === true) ? 'true' : 'false';
+			document.getElementById('trBWRiftTrapSetupSpecial').style.display = '';
+		}
+		selectBWRiftChoosePortal.value = (storageValue.choosePortal === true) ? 'true' : 'false';
+		selectBWRiftChoosePortalAfterCC.value = (storageValue.choosePortalAfterCC === true) ? 'true' : 'false';
+		selectBWRiftPortal.value = storageValue.priorities[selectBWRiftPriority.selectedIndex];
+		selectBWRiftPortalCursed.value = storageValue.prioritiesCursed[selectBWRiftPriorityCursed.selectedIndex];
+		nIndex = parseInt(selectBWRiftBuffCurse.value);
+		inputMinTimeSand.value = storageValue.minTimeSand[nIndex];
+		selectBWRiftMinRSCType.value = storageValue.minRSCType;
+		inputMinRSC.value = storageValue.minRSC;
+		selectBWRiftEnterWCurse.value = (storageValue.enterMinigameWCurse === true) ? 'true' : 'false';
+		if(selectBWRiftChoosePortal.value == 'true'){
+			document.getElementById('trBWRiftChoosePortalAfterCC').style.display = '';
+			document.getElementById('trBWRiftPortalPriority').style.display = '';
+			document.getElementById('trBWRiftPortalPriorityCursed').style.display = '';
+			document.getElementById('trBWRiftMinTimeSand').style.display = '';
+			document.getElementById('trBWRiftEnterMinigame').style.display = '';
+			document.getElementById('trBWRiftMinRSC').style.display = '';
+		}
+		else{
+			document.getElementById('trBWRiftChoosePortalAfterCC').style.display = 'none';
+			document.getElementById('trBWRiftPortalPriority').style.display = 'none';
+			document.getElementById('trBWRiftPortalPriorityCursed').style.display = 'none';
+			document.getElementById('trBWRiftMinTimeSand').style.display = 'none';
+			document.getElementById('trBWRiftEnterMinigame').style.display = 'none';
+			document.getElementById('trBWRiftMinRSC').style.display = 'none';
+		}
+		inputMinRSC.style.display = (selectBWRiftMinRSCType.value == 'NUMBER') ? '' : 'none';
+	}
+	
+	function saveFRox(){
+		var selectFRoxStage = document.getElementById('selectFRoxStage');
+		var selectFRoxWeapon = document.getElementById('selectFRoxWeapon');
+		var selectFRoxBase = document.getElementById('selectFRoxBase');
+		var selectFRoxBait = document.getElementById('selectFRoxBait');
+		var selectFRoxTrinket = document.getElementById('selectFRoxTrinket');
+		var selectFRoxActivateTower = document.getElementById('selectFRoxActivateTower');
+		var selectFRoxFullDeactivate = document.getElementById('selectFRoxFullDeactivate');
+		var storageValue = window.sessionStorage.getItem('FRox');
+		if(isNullOrUndefined(storageValue)){
+			var objDefaultFRox = {
+				stage : ['DAY','stage_one','stage_two','stage_three','stage_four','stage_five','DAWN'],
+				order : ['DAY','TWILIGHT','MIDNIGHT','PITCH','UTTER','FIRST','DAWN'],
+				weapon : new Array(7).fill(''),
+				base : new Array(7).fill(''),
+				trinket : new Array(7).fill('None'),
+				bait : new Array(7).fill('Gouda'),
+				activate : new Array(7).fill(false),
+				fullDeactivate : false
+			};
+			storageValue = JSON.stringify(objDefaultFRox);
+		}
+		storageValue = JSON.parse(storageValue);
+		var nIndex = storageValue.order.indexOf(selectFRoxStage.value);
+		if(nIndex < 0)
+			nIndex = 0;
+		storageValue.weapon[nIndex] = selectFRoxWeapon.value;
+		storageValue.base[nIndex] = selectFRoxBase.value;
+		storageValue.bait[nIndex] = selectFRoxBait.value;
+		storageValue.trinket[nIndex] = selectFRoxTrinket.value;
+		storageValue.activate[nIndex] = (selectFRoxActivateTower.value == 'true');
+		storageValue.fullDeactivate = (selectFRoxFullDeactivate.value == 'true');
+		window.sessionStorage.setItem('FRox', JSON.stringify(storageValue));
+	}
+	
+	function initControlsFRox(){
+		var selectFRoxStage = document.getElementById('selectFRoxStage');
+		var selectFRoxWeapon = document.getElementById('selectFRoxWeapon');
+		var selectFRoxBase = document.getElementById('selectFRoxBase');
+		var selectFRoxBait = document.getElementById('selectFRoxBait');
+		var selectFRoxTrinket = document.getElementById('selectFRoxTrinket');
+		var selectFRoxActivateTower = document.getElementById('selectFRoxActivateTower');
+		var selectFRoxFullDeactivate = document.getElementById('selectFRoxFullDeactivate');
+		var storageValue = window.sessionStorage.getItem('FRox');
+		if(isNullOrUndefined(storageValue)){
+			selectFRoxWeapon.selectedIndex = -1;
+			selectFRoxBase.selectedIndex = -1;
+			selectFRoxBait.selectedIndex = -1;
+			selectFRoxTrinket.selectedIndex = -1;
+			selectFRoxActivateTower.selectedIndex = -1;
+			selectFRoxFullDeactivate.selectedIndex = -1;
+		}
+		else{
+			storageValue = JSON.parse(storageValue);
+			var nIndex = storageValue.order.indexOf(selectFRoxStage.value);
+			if(nIndex < 0)
+				nIndex = 0;
+			selectFRoxWeapon.value = storageValue.weapon[nIndex];
+			selectFRoxBase.value = storageValue.base[nIndex];
+			selectFRoxTrinket.value = storageValue.trinket[nIndex];
+			selectFRoxBait.value = storageValue.bait[nIndex];
+			selectFRoxActivateTower.value = (storageValue.activate[nIndex] === true) ? 'true' : 'false';
+			selectFRoxFullDeactivate.value = (storageValue.fullDeactivate === true) ? 'true' : 'false';
+		}
+	}
+	
+	function onSelectWWRiftFaction(){
+		onInputMinRageChanged(document.getElementById('inputMinRage'));
+	}
+	
+	function onSelectWWRiftFactionNext(){
+		saveWWRift();
+	}
+	
+	function onSelectWWRiftRage(){
+		initControlsWWRift();
+	}
+	
+	function onSelectWWRiftTrapWeaponChanged(){
+		saveWWRift();
+	}
+	
+	function onSelectWWRiftTrapBaseChanged(){
+		saveWWRift();
+	}
+	
+	function onSelectWWRiftTrapTrinketChanged(){
+		saveWWRift();
+	}
+	
+	function onSelectWWRiftTrapBaitChanged(){
+		saveWWRift();
+	}
+	
+	function onInputMinRageChanged(input){
+		var value = parseInt(input.value);
+		var nMin = parseInt(input.min);
+		var nMax = parseInt(input.max);
+		var selectWWRiftFaction = document.getElementById('selectWWRiftFaction');
+		if(selectWWRiftFaction.value == 'MBW_45_48')
+			nMin = 45;
+		if(value < nMin)
+			input.value = nMin;
+		
+		if(selectWWRiftFaction.value == 'MBW_40_44')
+			nMax = 44;
+		if(value > nMax)
+			input.value = nMax;
+		saveWWRift();
+		initControlsWWRift();
+	}
+	
+	function onSelectWWRiftMBWBar4044(){
+		initControlsWWRift();
+	}
+	
+	function onSelectWWRiftMBWBar4548(){
+		initControlsWWRift();
+	}
+
+	function onSelectWWRiftMBWTrapWeapon(){
+		saveWWRift();
+	}
+	
+	function onSelectWWRiftMBWTrapBase(){
+		saveWWRift();
+	}
+	
+	function onSelectWWRiftMBWTrapTrinket(){
+		saveWWRift();
+	}
+	
+	function onSelectWWRiftMBWTrapBait(){
+		saveWWRift();
+	}
+
+	function saveWWRift(){
+		var selectWWRiftFaction = document.getElementById('selectWWRiftFaction');
+		var selectWWRiftFactionNext = document.getElementById('selectWWRiftFactionNext');
+		var selectWWRiftRage = document.getElementById('selectWWRiftRage');
+		var selectWWRiftTrapWeapon = document.getElementById('selectWWRiftTrapWeapon');
+		var selectWWRiftTrapBase = document.getElementById('selectWWRiftTrapBase');
+		var selectWWRiftTrapTrinket = document.getElementById('selectWWRiftTrapTrinket');
+		var selectWWRiftTrapBait = document.getElementById('selectWWRiftTrapBait');
+		var selectWWRiftMBWBar4044 = document.getElementById('selectWWRiftMBWBar4044');
+		var selectWWRiftMBWBar4548 = document.getElementById('selectWWRiftMBWBar4548');
+		var selectWWRiftMBWTrapWeapon = document.getElementById('selectWWRiftMBWTrapWeapon');
+		var selectWWRiftMBWTrapBase = document.getElementById('selectWWRiftMBWTrapBase');
+		var selectWWRiftMBWTrapTrinket = document.getElementById('selectWWRiftMBWTrapTrinket');
+		var selectWWRiftMBWTrapBait = document.getElementById('selectWWRiftMBWTrapBait');
+		var inputMinRage = document.getElementById('inputMinRage');
+		var storageValue = window.sessionStorage.getItem('WWRift');
+		if(isNullOrUndefined(storageValue)){
+			var objDefaultWWRift = {
+				factionFocus : "CC",
+				factionFocusNext : "Remain",
+				faction : {
+					weapon : new Array(3).fill(''),
+					base : new Array(3).fill(''),
+					trinket : new Array(3).fill('None'),
+					bait : new Array(3).fill('None')
+				},
+				MBW : {
+					minRageLLC : 40,
+					rage4044: {
+						weapon : new Array(7).fill(''),
+						base : new Array(7).fill(''),
+						trinket : new Array(7).fill('None'),
+						bait : new Array(7).fill('None')
+					},
+					rage4548: {
+						weapon : new Array(8).fill(''),
+						base : new Array(8).fill(''),
+						trinket : new Array(8).fill('None'),
+						bait : new Array(8).fill('None')
+					},
+				},
+			};
+			storageValue = JSON.stringify(objDefaultWWRift);
+		}
+		storageValue = JSON.parse(storageValue);
+		storageValue.factionFocus = selectWWRiftFaction.value;
+		storageValue.factionFocusNext = selectWWRiftFactionNext.value;
+		var nIndex = selectWWRiftRage.selectedIndex;
+		if(nIndex < 0)
+			nIndex = 0;
+		storageValue.faction.weapon[nIndex] = selectWWRiftTrapWeapon.value;
+		storageValue.faction.base[nIndex] = selectWWRiftTrapBase.value;
+		storageValue.faction.trinket[nIndex] = selectWWRiftTrapTrinket.value;
+		storageValue.faction.bait[nIndex] = selectWWRiftTrapBait.value;
+		
+		storageValue.MBW.minRageLLC = parseInt(inputMinRage.value);
+		if(selectWWRiftFaction.value == 'MBW_40_44'){
+			nIndex = selectWWRiftMBWBar4044.selectedIndex;
+			if(nIndex < 0)
+				nIndex = 0;
+			storageValue.MBW.rage4044.weapon[nIndex] = selectWWRiftMBWTrapWeapon.value;
+			storageValue.MBW.rage4044.base[nIndex] = selectWWRiftMBWTrapBase.value;
+			storageValue.MBW.rage4044.trinket[nIndex] = selectWWRiftMBWTrapTrinket.value;
+			storageValue.MBW.rage4044.bait[nIndex] = selectWWRiftMBWTrapBait.value;
+		}
+		else if(selectWWRiftFaction.value == 'MBW_45_48'){
+			nIndex = selectWWRiftMBWBar4548.selectedIndex;
+			if(nIndex < 0)
+				nIndex = 0;
+			storageValue.MBW.rage4548.weapon[nIndex] = selectWWRiftMBWTrapWeapon.value;
+			storageValue.MBW.rage4548.base[nIndex] = selectWWRiftMBWTrapBase.value;
+			storageValue.MBW.rage4548.trinket[nIndex] = selectWWRiftMBWTrapTrinket.value;
+			storageValue.MBW.rage4548.bait[nIndex] = selectWWRiftMBWTrapBait.value;
+		}
+		window.sessionStorage.setItem('WWRift', JSON.stringify(storageValue));
+	}
+	
+	function initControlsWWRift(){
+		var selectWWRiftFaction = document.getElementById('selectWWRiftFaction');
+		var selectWWRiftFactionNext = document.getElementById('selectWWRiftFactionNext');
+		var selectWWRiftRage = document.getElementById('selectWWRiftRage');
+		var selectWWRiftTrapWeapon = document.getElementById('selectWWRiftTrapWeapon');
+		var selectWWRiftTrapBase = document.getElementById('selectWWRiftTrapBase');
+		var selectWWRiftTrapTrinket = document.getElementById('selectWWRiftTrapTrinket');
+		var selectWWRiftTrapBait = document.getElementById('selectWWRiftTrapBait');
+		var selectWWRiftMBWBar4044 = document.getElementById('selectWWRiftMBWBar4044');
+		var selectWWRiftMBWBar4548 = document.getElementById('selectWWRiftMBWBar4548');
+		var selectWWRiftMBWTrapWeapon = document.getElementById('selectWWRiftMBWTrapWeapon');
+		var selectWWRiftMBWTrapBase = document.getElementById('selectWWRiftMBWTrapBase');
+		var selectWWRiftMBWTrapTrinket = document.getElementById('selectWWRiftMBWTrapTrinket');
+		var selectWWRiftMBWTrapBait = document.getElementById('selectWWRiftMBWTrapBait');
+		var inputMinRage = document.getElementById('inputMinRage');
+		var storageValue = window.sessionStorage.getItem('WWRift');
+		if(isNullOrUndefined(storageValue)){
+			selectWWRiftFaction.selectedIndex = -1;
+			selectWWRiftFactionNext.selectedIndex = -1;
+			selectWWRiftRage.selectedIndex = 0;
+			selectWWRiftTrapWeapon.selectedIndex = -1;
+			selectWWRiftTrapBase.selectedIndex = -1;
+			selectWWRiftTrapTrinket.selectedIndex = -1;
+			selectWWRiftTrapBait.selectedIndex = -1;
+			inputMinRage.value = 40;
+			selectWWRiftMBWBar4044.selectedIndex = 0;
+			selectWWRiftMBWBar4548.selectedIndex = 0;
+			selectWWRiftMBWTrapWeapon.selectedIndex = -1;
+			selectWWRiftMBWTrapBase.selectedIndex = -1;
+			selectWWRiftMBWTrapTrinket.selectedIndex = -1;
+			selectWWRiftMBWTrapBait.selectedIndex = -1;
+		}
+		else{
+			storageValue = JSON.parse(storageValue);
+			selectWWRiftFaction.value = storageValue.factionFocus;
+			selectWWRiftFactionNext.value = storageValue.factionFocusNext;
+			var nIndex = selectWWRiftRage.selectedIndex;
+			if(nIndex < 0)
+				nIndex = 0;
+			selectWWRiftTrapWeapon.value = storageValue.faction.weapon[nIndex];
+			selectWWRiftTrapBase.value = storageValue.faction.base[nIndex];
+			selectWWRiftTrapTrinket.value = storageValue.faction.trinket[nIndex];
+			selectWWRiftTrapBait.value = storageValue.faction.bait[nIndex];
+			
+			inputMinRage.value = storageValue.MBW.minRageLLC;
+			if(selectWWRiftFaction.value == 'MBW_40_44'){
+				nIndex = selectWWRiftMBWBar4044.selectedIndex;
+				if(nIndex < 0)
+					nIndex = 0;
+				selectWWRiftMBWTrapWeapon.value = storageValue.MBW.rage4044.weapon[nIndex];
+				selectWWRiftMBWTrapBase.value = storageValue.MBW.rage4044.base[nIndex];
+				selectWWRiftMBWTrapTrinket.value = storageValue.MBW.rage4044.trinket[nIndex];
+				selectWWRiftMBWTrapBait.value = storageValue.MBW.rage4044.bait[nIndex];
+			}
+			else if(selectWWRiftFaction.value == 'MBW_45_48'){
+				nIndex = selectWWRiftMBWBar4548.selectedIndex;
+				if(nIndex < 0)
+					nIndex = 0;
+				selectWWRiftMBWTrapWeapon.value = storageValue.MBW.rage4548.weapon[nIndex];
+				selectWWRiftMBWTrapBase.value = storageValue.MBW.rage4548.base[nIndex];
+				selectWWRiftMBWTrapTrinket.value = storageValue.MBW.rage4548.trinket[nIndex];
+				selectWWRiftMBWTrapBait.value = storageValue.MBW.rage4548.bait[nIndex];
+			}
+		}
+		if(selectWWRiftFaction.value.indexOf('MBW') > -1){
+			if(selectWWRiftFaction.value == 'MBW_40_44'){
+				selectWWRiftMBWBar4044.style.display = '';
+				selectWWRiftMBWBar4548.style.display = 'none';
+			}
+			else{
+				selectWWRiftMBWBar4044.style.display = 'none';
+				selectWWRiftMBWBar4548.style.display = '';
+			}
+			document.getElementById('trWWRiftFactionFocusNext').style.display = 'none';
+			document.getElementById('trWWRiftMBWMinRage').style.display = 'table-row';
+			document.getElementById('trWWRiftMBWTrapSetup').style.display = 'table-row';
+			document.getElementById('trWWRiftTrapSetup').style.display = 'none';
+		}
+		else{
+			document.getElementById('trWWRiftFactionFocusNext').style.display = 'table-row';
+			document.getElementById('trWWRiftMBWMinRage').style.display = 'none';
+			document.getElementById('trWWRiftMBWTrapSetup').style.display = 'none';
+			document.getElementById('trWWRiftTrapSetup').style.display = 'table-row';
+		}
+	}
+	
+	function onSelectGESStage(){
+		initControlsGES();
+	}
+	
+	function onSelectGESTrapWeapon(){
+		saveGES();
+	}
+	
+	function onSelectGESTrapBase(){
+		saveGES();
+	}
+	
+	function onSelectGESTrapTrinket(){
+		saveGES();
+	}
+	
+	function onSelectGESRRTrapTrinket(){
+		saveGES();
+	}
+	
+	function onSelectGESDCTrapTrinket(){
+		saveGES();
+	}
+	
+	function onSelectGESTrapBait(){
+		saveGES();
+	}
+	
+	function onSelectGESSDLoadCrate(){
+		saveGES();
+		initControlsGES();
+	}
+	
+	function onInputMinCrateChanged(){
+		saveGES();
+	}
+	
+	function onSelectGESRRRepellent(){
+		saveGES();
+		initControlsGES();
+	}
+	
+	function onInputMinRepellentChanged(){
+		saveGES();
+	}
+	
+	function onSelectGESDCStokeEngine(){
+		saveGES();
+		initControlsGES();
+	}
+	
+	function oninputMinFuelNuggetChanged(){
+		saveGES();
+	}
+	
+	function saveGES(){
+		var selectGESStage = document.getElementById('selectGESStage');
+		var selectGESTrapWeapon = document.getElementById('selectGESTrapWeapon');
+		var selectGESTrapBase = document.getElementById('selectGESTrapBase');
+		var selectGESTrapTrinket = document.getElementById('selectGESTrapTrinket');
+		var selectGESRRTrapTrinket = document.getElementById('selectGESRRTrapTrinket');
+		var selectGESDCTrapTrinket = document.getElementById('selectGESDCTrapTrinket');
+		var selectGESTrapBait = document.getElementById('selectGESTrapBait');
+		var selectGESSDLoadCrate = document.getElementById('selectGESSDLoadCrate');
+		var inputMinCrate = document.getElementById('inputMinCrate');
+		var selectGESRRRepellent = document.getElementById('selectGESRRRepellent');
+		var inputMinRepellent = document.getElementById('inputMinRepellent');
+		var selectGESDCStokeEngine = document.getElementById('selectGESDCStokeEngine');
+		var inputMinFuelNugget = document.getElementById('inputMinFuelNugget');
+		var storageValue = window.sessionStorage.getItem('GES');
+		if(isNullOrUndefined(storageValue)){
+			var objDefaultGES = {
+				bLoadCrate : false,
+				nMinCrate : 11,
+				bUseRepellent : false,
+				nMinRepellent : 11,
+				bStokeEngine : false,
+				nMinFuelNugget : 20,
+				SD_BEFORE : {
+					weapon : '',
+					base : '',
+					trinket : '',
+					bait : ''
+				},
+				SD_AFTER : {
+					weapon : '',
+					base : '',
+					trinket : '',
+					bait : ''
+				},
+				RR : {
+					weapon : '',
+					base : '',
+					trinket : '',
+					bait : ''
+				},
+				DC : {
+					weapon : '',
+					base : '',
+					trinket : '',
+					bait : ''
+				},
+				WAITING : {
+					weapon : '',
+					base : '',
+					trinket : '',
+					bait : ''
+				}
+			};
+			storageValue = JSON.stringify(objDefaultGES);
+		}
+		storageValue = JSON.parse(storageValue);
+		var strStage = selectGESStage.value;
+		storageValue[strStage].weapon = selectGESTrapWeapon.value;
+		storageValue[strStage].base = selectGESTrapBase.value;
+		storageValue[strStage].bait = selectGESTrapBait.value;
+		if (strStage == 'RR')
+			storageValue[strStage].trinket = selectGESRRTrapTrinket.value;
+		else if (strStage == 'DC')
+			storageValue[strStage].trinket = selectGESDCTrapTrinket.value;
+		else
+			storageValue[strStage].trinket = selectGESTrapTrinket.value;
+		storageValue.bLoadCrate = (selectGESSDLoadCrate.value == 'true');
+		storageValue.nMinCrate = parseInt(inputMinCrate.value);
+		storageValue.bUseRepellent = (selectGESRRRepellent.value == 'true');
+		storageValue.nMinRepellent = parseInt(inputMinRepellent.value);
+		storageValue.bStokeEngine = (selectGESDCStokeEngine.value == 'true');
+		storageValue.nMinFuelNugget = parseInt(inputMinFuelNugget.value);
+		window.sessionStorage.setItem('GES', JSON.stringify(storageValue));
+	}
+	
+	function initControlsGES(){
+		var selectGESStage = document.getElementById('selectGESStage');
+		var selectGESTrapWeapon = document.getElementById('selectGESTrapWeapon');
+		var selectGESTrapBase = document.getElementById('selectGESTrapBase');
+		var selectGESTrapTrinket = document.getElementById('selectGESTrapTrinket');
+		var selectGESRRTrapTrinket = document.getElementById('selectGESRRTrapTrinket');
+		var selectGESDCTrapTrinket = document.getElementById('selectGESDCTrapTrinket');
+		var selectGESTrapBait = document.getElementById('selectGESTrapBait');
+		var selectGESSDLoadCrate = document.getElementById('selectGESSDLoadCrate');
+		var inputMinCrate = document.getElementById('inputMinCrate');
+		var selectGESRRRepellent = document.getElementById('selectGESRRRepellent');
+		var inputMinRepellent = document.getElementById('inputMinRepellent');
+		var selectGESDCStokeEngine = document.getElementById('selectGESDCStokeEngine');
+		var inputMinFuelNugget = document.getElementById('inputMinFuelNugget');
+		var storageValue = window.sessionStorage.getItem('GES');
+		var strStage = selectGESStage.value;
+		if(isNullOrUndefined(storageValue)){
+			selectGESTrapWeapon.selectedIndex = -1;
+			selectGESTrapBase.selectedIndex = -1;
+			selectGESTrapTrinket.selectedIndex = -1;
+			selectGESRRTrapTrinket.selectedIndex = -1;
+			selectGESDCTrapTrinket.selectedIndex = -1;
+			selectGESTrapBait.selectedIndex = -1;
+			selectGESSDLoadCrate.selectedIndex = 0;
+			inputMinCrate.value = 11;
+			selectGESRRRepellent.selectedIndex = 0;
+			inputMinRepellent.value = 11;
+			selectGESDCStokeEngine.selectedIndex = 0;
+			inputMinFuelNugget.value = 20;
+		}
+		else{
+			storageValue = JSON.parse(storageValue);
+			selectGESTrapWeapon.value = storageValue[strStage].weapon;
+			selectGESTrapBase.value = storageValue[strStage].base;
+			selectGESTrapBait.value = storageValue[strStage].bait;
+			if(strStage == 'RR')
+				selectGESRRTrapTrinket.value = storageValue.RR.trinket;
+			else if(strStage == 'DC')
+				selectGESDCTrapTrinket.value = storageValue.DC.trinket;
+			else
+				selectGESTrapTrinket.value = storageValue[strStage].trinket;
+			selectGESSDLoadCrate.value = (storageValue.bLoadCrate === true) ? 'true' : 'false';
+			inputMinCrate.value = storageValue.nMinCrate;
+			selectGESRRRepellent.value = (storageValue.bUseRepellent === true) ? 'true' : 'false';
+			inputMinRepellent.value = storageValue.nMinRepellent;
+			selectGESDCStokeEngine.value = (storageValue.bStokeEngine === true) ? 'true' : 'false';
+			inputMinFuelNugget.value = storageValue.nMinFuelNugget;
+		}
+		if(strStage == 'RR'){
+			selectGESTrapTrinket.style.display = 'none';
+			selectGESRRTrapTrinket.style.display = '';
+			selectGESDCTrapTrinket.style.display = 'none';
+		}
+		else if(strStage == 'DC'){
+			selectGESTrapTrinket.style.display = 'none';
+			selectGESRRTrapTrinket.style.display = 'none';
+			selectGESDCTrapTrinket.style.display = '';
+		}
+		else{
+			selectGESTrapTrinket.style.display = '';
+			selectGESRRTrapTrinket.style.display = 'none';
+			selectGESDCTrapTrinket.style.display = 'none';
+		}
+		inputMinCrate.disabled = (selectGESSDLoadCrate.value == 'true') ? '' : 'disabled';
+		inputMinRepellent.disabled = (selectGESRRRepellent.value == 'true') ? '' : 'disabled';
+		inputMinFuelNugget.disabled = (selectGESDCStokeEngine.value == 'true') ? '' : 'disabled';
+	}
+	
+	function showOrHideTr(algo){
+		var objTableRow = {
+			'All LG Area' : {
+				arr : ['trLGTGAutoFill','trLGTGAutoPour','trPourTrapSetup','trCurseLiftedTrapSetup','trSaltedTrapSetup'],
+				init : function(data){initControlsLG();}
+			},
+			'Sunken City Custom' : {
+				arr : ['trSCCustom','trSCCustomUseSmartJet'],
+				init : function(data){initControlsSCCustom(data);}
+			},
+			'Labyrinth' : {
+				arr : ['trLabyrinth','trPriorities15','trPriorities1560','trPriorities60','trLabyrinthOtherHallway','trLabyrinthDisarm','trLabyrinthArmOtherBase', 'trLabyrinthDisarmCompass','trLabyrinthWeaponFarming'],
+				init : function(data){initControlsLaby(data);}
+			},
+			'Fiery Warpath' : {
+				arr : ['trFWWave','trFWTrapSetup','trFWStreak','trFWFocusType','trFWLastType','trFWSupportConfig', 'trFW4TrapSetup'],
+				init : function(data){initControlsFW(data);}
+			},
+			'Burroughs Rift Custom' : {
+				arr : ['trBRConfig','trBRToggle','trBRTrapSetup'],
+				init : function(data){initControlsBR(data);}
+			},
+			'SG' : {
+				arr : ['trSGTrapSetup','trSGDisarmBait'],
+				init : function(data){initControlsSG(data);}
+			},
+			'Zokor' : {
+				arr : ['trZokorTrapSetup'],
+				init : function(data){initControlsZokor(data);}
+			},
+			'ZT' : {
+				arr : ['trZTFocus','trZTTrapSetup1st','trZTTrapSetup2nd'],
+				init : function(data){initControlsZT(data);}
+			},
+			'Iceberg' : {
+				arr : ['trIceberg'],
+				init : function(data){initControlsIceberg(data);}
+			},
+			'WWRift' : {
+				arr : ['trWWRiftFactionFocus', 'trWWRiftFactionFocusNext', 'trWWRiftTrapSetup', 'trWWRiftMBWTrapSetup', 'trWWRiftMBWMinRage'],
+				init : function(data){initControlsWWRift(data);}
+			},
+			'GES' : {
+				arr : ['trGESTrapSetup', 'trGESSDLoadCrate', 'trGESRRRepellent', 'trGESDCStokeEngine'],
+				init : function(data){initControlsGES(data);}
+			},
+			'Fort Rox' : {
+				arr : ['trFRoxTrapSetup', 'trFRoxDeactiveTower'],
+				init : function(data){initControlsFRox(data);}
+			},
+			'GWH2016' : {
+				arr : ['trGWHTrapSetup','trGWHTurboBoost','trGWHFlying','trGWHFlyingFirework','trGWHFlyingLand'],
+				init : function(data){initControlsGWH2016(data);}
+			},
+			'Bristle Woods Rift' : {
+				arr : ['trBWRiftSubLocation','trBWRiftMasterTrapSetup','trBWRiftAutoChoosePortal','trBWRiftPortalPriority','trBWRiftPortalPriorityCursed','trBWRiftMinTimeSand','trBWRiftMinRSC','trBWRiftDeactivatePocketWatch','trBWRiftChoosePortalAfterCC','trBWRiftTrapSetupSpecial','trBWRiftEnterMinigame','trBWRiftActivatePocketWatch'],
+				init : function(data){initControlsBWRift(data);}
+			},
+			'BC/JOD' : {
+				arr : ['trBCJODSubLocation', 'trBCJODTrapSetup'],
+				init : function(data){initControlsBCJOD(data);}
+			},
+			'FG/AR' : {
+				arr : ['trFGARSubLocation', 'trFGARTrapSetup'],
+				init : function(data){initControlsFGAR(data);}
+			},
+		};
+		var i, temp;
+		for(var prop in objTableRow){
+			if(objTableRow.hasOwnProperty(prop)){
+				temp = (prop == algo) ? 'table-row' : 'none';
+				for(i=0;i<objTableRow[prop].arr.length;i++)
+					document.getElementById(objTableRow[prop].arr[i]).style.display = temp;
+			}
+		}
+		if(!isNullOrUndefined(objTableRow[algo]))
+			objTableRow[algo].init(true);
+
+		initControlsMapHunting();
+		initControlsSpecialFeature();
+	}
+</script>
